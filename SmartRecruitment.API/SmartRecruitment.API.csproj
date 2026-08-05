@@ -29,11 +29,8 @@
     <Folder Include="Middleware\" />
     <Folder Include="Enums\" />
     <Folder Include="Constants\" />
-    <Folder Include="Models\DTOs\" />
     <Folder Include="Models\Common\" />
     <Folder Include="Extensions\" />
-    <Folder Include="Services\" />
-    <Folder Include="Repositories\" />
     <Folder Include="Storage\CVs\" />
   </ItemGroup>
 
