@@ -15,5 +15,11 @@
         public bool IsActive { get; set; } = true;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        // Member 3 integration point.
+        public EmployerProfile? EmployerProfile { get; set; }
+
+        // Member 2 integration point.
+        public JobSeekerProfile? JobSeekerProfile { get; set; }
     }
 }
