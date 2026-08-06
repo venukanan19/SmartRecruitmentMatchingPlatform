@@ -78,11 +78,7 @@ namespace SmartRecruitment.API.Data.Configurations
                 .HasForeignKey(x => x.JobSeekerProfileId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // JobSeekerProfile 1 -> 0 or 1 CvMetadata
-            builder.HasOne(x => x.CvMetadata)
-                .WithOne(x => x.JobSeekerProfile)
-                .HasForeignKey<CvMetadataConfiguration>(x => x.JobSeekerProfileId)
-                .OnDelete(DeleteBehavior.Cascade);
+            
         }
 
     }
