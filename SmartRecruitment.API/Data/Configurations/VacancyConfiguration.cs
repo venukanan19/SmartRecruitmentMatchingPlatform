@@ -32,9 +32,12 @@ namespace SmartRecruitment.API.Data.Configurations
             builder.Property(vacancy => vacancy.IsClosed)
                 .HasDefaultValue(false);
 
-            builder.HasCheckConstraint(
-                "CK_Vacancies_RequiredExperienceYears",
-                "[RequiredExperienceYears] >= 0");
+            builder.ToTable("Vacancies", table =>
+            {
+                table.HasCheckConstraint(
+                    "CK_Vacancies_RequiredExperienceYears",
+                    "[RequiredExperienceYears] >= 0");
+            });
         }
     }
 }
