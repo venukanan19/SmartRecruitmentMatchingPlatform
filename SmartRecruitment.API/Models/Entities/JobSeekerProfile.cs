@@ -36,6 +36,8 @@
         public ICollection<Experience> Experiences { get; set; }
             = new List<Experience>();
 
-        
+        public CvMetadata? CvMetadata { get; set; }
+
+
     }
 }
