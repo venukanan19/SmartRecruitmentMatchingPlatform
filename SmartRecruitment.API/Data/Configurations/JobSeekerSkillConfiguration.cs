@@ -1,0 +1,51 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using SmartRecruitment.API.Models.Entities;
+
+namespace SmartRecruitment.API.Data.Configurations
+{
+    public class JobSeekerSkillConfiguration : IEntityTypeConfiguration<JobSeekerSkill>
+    {
+        public void Configure(
+           EntityTypeBuilder<JobSeekerSkill> builder)
+        {
+            builder.ToTable("JobSeekerSkills");
+
+            // Composite primary key
+            builder.HasKey(x => new
+            {
+                x.JobSeekerProfileId,
+                x.SkillId
+            });
+
+            // Optional database-level check constraints
+            builder.ToTable(
+                "JobSeekerSkills",
+                tableBuilder =>
+                {
+                    tableBuilder.HasCheckConstraint(
+                        "CK_JobSeekerSkills_ProficiencyLevel",
+                        "[ProficiencyLevel] BETWEEN 1 AND 5");
+
+                    tableBuilder.HasCheckConstraint(
+                        "CK_JobSeekerSkills_YearsOfExperience",
+                        "[YearsOfExperience] >= 0");
+                });
+
+            // Profile relationship
+            builder.HasOne(x => x.JobSeekerProfile)
+                .WithMany(x => x.JobSeekerSkills)
+                .HasForeignKey(x => x.JobSeekerProfileId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Shared Skill relationship
+            builder.HasOne(x => x.Skill)
+                .WithMany()
+                .HasForeignKey(x => x.SkillId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Additional index for Skill-based searches
+            builder.HasIndex(x => x.SkillId);
+        }
+    }
+}

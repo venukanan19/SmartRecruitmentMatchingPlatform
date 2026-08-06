@@ -22,15 +22,16 @@
     <PackageReference Include="Microsoft.OpenApi" Version="2.7.5" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Helpers\" />
-    <Folder Include="Middleware\" />
-    <Folder Include="Constants\" />
-    <Folder Include="Models\Common\" />
-    <Folder Include="Extensions\" />
-    <Folder Include="Services\" />
-    <Folder Include="Repositories\" />
-    <Folder Include="Storage\CVs\" />
-  </ItemGroup>
+	<ItemGroup>
+		<Folder Include="Data\Seed\" />
+		<Folder Include="Helpers\" />
+		<Folder Include="Middleware\" />
+		<Folder Include="Constants\" />
+		<Folder Include="Models\Common\" />
+		<Folder Include="Extensions\" />
+		<Folder Include="Services\" />
+		<Folder Include="Repositories\" />
+		<Folder Include="Storage\CVs\" />
+	</ItemGroup>
 
 </Project>
