@@ -11,4 +11,4 @@ namespace SmartRecruitment.API.Repositories.Interfaces
 
         Task SaveChangesAsync();
     }
-}
+} 
