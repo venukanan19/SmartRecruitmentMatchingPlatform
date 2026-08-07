@@ -2,11 +2,9 @@
 {
     public class MatchResultDto
     {
-        internal int JobSeekerProfileId;
-
         public int VacancyId { get; set; }
 
-        public int JobSeekerId { get; set; }
+        public int JobSeekerProfileId { get; set; }
 
         public double SkillScore { get; set; }
 
