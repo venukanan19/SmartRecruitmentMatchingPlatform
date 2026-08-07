@@ -1,22 +1,40 @@
-﻿using SmartRecruitment.API.Models.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using SmartRecruitment.API.Models.Entities;
 
 namespace SmartRecruitment.API.Data.Configurations
 {
     public class CvMetadataConfiguration
+        : IEntityTypeConfiguration<CvMetadata>
     {
-        public int CvMetadataId { get; set; }
+        public void Configure(EntityTypeBuilder<CvMetadata> builder)
+        {
+            builder.ToTable("CvMetadata");
 
-        public int JobSeekerProfileId { get; set; }
+            builder.HasKey(x => x.CvMetadataId);
 
-        public string OriginalFileName { get; set; }
-            = string.Empty;
- 
-        public long FileSize { get; set; }
+            builder.Property(x => x.CvMetadataId)
+                .ValueGeneratedOnAdd();
 
-        public DateTime UploadedAt { get; set; }
-            = DateTime.UtcNow;
+            builder.Property(x => x.OriginalFileName)
+                .IsRequired()
+                .HasMaxLength(255);
+              
 
-        public JobSeekerProfile JobSeekerProfile
-        { get; set; } = null!;
+            builder.Property(x => x.FileSize)
+                .IsRequired();
+
+            builder.Property(x => x.UploadedAt)
+                .IsRequired()
+                .HasColumnType("datetime2");
+
+            builder.HasIndex(x => x.JobSeekerProfileId)
+                .IsUnique();
+
+            builder.HasOne(x => x.JobSeekerProfile)
+                .WithOne(x => x.CvMetadata)
+                .HasForeignKey<CvMetadata>(x => x.JobSeekerProfileId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
     }
 }
