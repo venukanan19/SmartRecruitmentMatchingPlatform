@@ -26,10 +26,10 @@ namespace SmartRecruitment.API.Data.Configurations
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Shared Skill relationship
-            builder.HasOne(x => x.Skill)
-                .WithMany()
-                .HasForeignKey(x => x.SkillId)
-                .OnDelete(DeleteBehavior.Restrict);
+            //builder.HasOne(x => x.Skill)
+            //    .WithMany(x => x.JobSeekerSkills)
+            //    .HasForeignKey(x => x.SkillId)
+            //    .OnDelete(DeleteBehavior.Restrict);
 
             // Additional index for Skill-based searches
             builder.HasIndex(x => x.SkillId);
