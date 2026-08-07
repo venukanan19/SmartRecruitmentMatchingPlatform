@@ -30,9 +30,10 @@
     <Folder Include="Helpers\" />
     <Folder Include="Middleware\" />
     <Folder Include="Constants\" />
-    <Folder Include="Models\Common\" />
     <Folder Include="Extensions\" />
     <Folder Include="Storage\CVs\" />
+    <Folder Include="Validators\Employer\" />
+    <Folder Include="Validators\Vacancy\" />
   </ItemGroup>
 
 </Project>
