@@ -2,6 +2,9 @@
 {
     public class RankedCandidateDto
     {
+        internal double TotalScore;
+        internal int JobSeekerProfileId;
+
         public int JobSeekerId { get; set; }
 
         public string CandidateName { get; set; } = string.Empty;

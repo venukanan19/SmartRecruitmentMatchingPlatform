@@ -1,85 +1,51 @@
-﻿using SmartRecruitment.API.Models.DTOs;
-using SmartRecruitment.API.Repositories.Interfaces;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using SmartRecruitment.API.Models.DTOs;
 using SmartRecruitment.API.Services.Interfaces;
 
 namespace SmartRecruitment.API.Services
 {
     public class MatchingService : IMatchingService
     {
-        private readonly IVacancyRepository _vacancyRepository;
+        // Approved Rule-Based Engine Weights (Total = 100%)
+        private const double SKILL_WEIGHT = 50.0;
+        private const double EXPERIENCE_WEIGHT = 30.0;
+        private const double EDUCATION_WEIGHT = 20.0;
 
-        public MatchingService(IVacancyRepository vacancyRepository)
+        public async Task<MatchResultDto> CalculateMatchAsync(int jobSeekerProfileId, int vacancyId)
         {
-            _vacancyRepository = vacancyRepository;
+            // Placeholder evaluation logic — ready to integrate with SkillGap/Profile services
+            double skillScore = 40.0;     // Out of 50
+            double expScore = 25.0;       // Out of 30
+            double eduScore = 20.0;       // Out of 20
+            double total = skillScore + expScore + eduScore;
+
+            var missingSkills = new List<string> { "Docker", "Azure" };
+
+            return await Task.FromResult(new MatchResultDto
+            {
+                VacancyId = vacancyId,
+                JobSeekerProfileId = jobSeekerProfileId,
+                SkillScore = skillScore,
+                ExperienceScore = expScore,
+                EducationScore = eduScore,
+                TotalScore = total,
+                MissingSkills = missingSkills
+            });
         }
 
-        public async Task<MatchResultDto> GetMatchScoreAsync(
-            int vacancyId,
-            int jobSeekerId)
+        public async Task<IEnumerable<RankedCandidateDto>> GetRankedCandidatesAsync(int vacancyId)
         {
-            // Step 1: Read Vacancy
-            var vacancy = await _vacancyRepository.GetByIdAsync(vacancyId);
-
-
-            if (vacancy is null)
+            // Dummy collection ranked in descending score order
+            var candidates = new List<RankedCandidateDto>
             {
-                throw new KeyNotFoundException($"Vacancy with ID {vacancyId} not found.");
-            }
+                new RankedCandidateDto { Rank = 1, JobSeekerProfileId = 101, CandidateName = "Candidate A", TotalScore = 92.5 },
+                new RankedCandidateDto { Rank = 2, JobSeekerProfileId = 102, CandidateName = "Candidate B", TotalScore = 85.0 },
+                new RankedCandidateDto { Rank = 3, JobSeekerProfileId = 103, CandidateName = "Candidate C", TotalScore = 78.0 }
+            };
 
-            // TODO:
-            // Read JobSeekerProfile
-            // Read JobSeekerSkills
-            // Read VacancySkills
-
-            // TODO:
-            // Compare Skills
-
-            // TODO:
-            // Compare Experience
-            // vacancy.RequiredExperienceYears
-
-            // TODO:
-            // Compare Education
-            // vacancy.EducationRequirement
-
-            // TODO:
-            // Compare Location
-            // vacancy.Location
-
-            // TODO:
-            // Calculate Total Score
-
-            // TODO:
-            // Find Missing Skills
-
-            throw new NotImplementedException();
-        }
-
-        public async Task<List<RankedCandidateDto>> GetRankedCandidatesAsync(
-            int vacancyId)
-        {
-            // Step 1: Read Vacancy
-            var vacancy = await _vacancyRepository.GetByIdAsync(vacancyId);
-
-            if (vacancy is null)
-            {
-                throw new KeyNotFoundException($"Vacancy with ID {vacancyId} not found.");
-            }
-
-            // TODO:
-            // Get all applicants
-
-            // TODO:
-            // Calculate Match Score for each applicant
-
-            // TODO:
-            // Sort by TotalScore (Highest First)
-
-            // TODO:
-            // Assign Rank
-
-            throw new NotImplementedException();
+            return await Task.FromResult(candidates);
         }
     }
 }
-

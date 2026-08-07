@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SmartRecruitment.API.Services.Interfaces;
 
@@ -15,24 +16,20 @@ namespace SmartRecruitment.API.Controllers
             _matchingService = matchingService;
         }
 
-        [HttpGet("score")]
-        public async Task<IActionResult> GetMatchScore(
-            int vacancyId,
-            int jobSeekerId)
+        [HttpGet("calculate")]
+        [Authorize]
+        public async Task<IActionResult> CalculateMatch([FromQuery] int jobSeekerProfileId, [FromQuery] int vacancyId)
         {
-            var result =
-                await _matchingService.GetMatchScoreAsync(vacancyId, jobSeekerId);
-
+            var result = await _matchingService.CalculateMatchAsync(jobSeekerProfileId, vacancyId);
             return Ok(result);
         }
 
-        [HttpGet("ranking/{vacancyId}")]
-        public async Task<IActionResult> GetRanking(int vacancyId)
+        [HttpGet("ranked-candidates/{vacancyId}")]
+        [Authorize(Roles = "Employer,Admin")]
+        public async Task<IActionResult> GetRankedCandidates(int vacancyId)
         {
-            var result =
-                await _matchingService.GetRankedCandidatesAsync(vacancyId);
-
-            return Ok(result);
+            var candidates = await _matchingService.GetRankedCandidatesAsync(vacancyId);
+            return Ok(candidates);
         }
     }
 }
