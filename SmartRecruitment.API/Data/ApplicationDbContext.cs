@@ -15,5 +15,31 @@ namespace SmartRecruitment.API.Data
         public DbSet<Notification> Notifications { get; set; }
 
         //public DbSet<ContactRequest> ContactRequests { get; set; }
+
+        // Member 2 DbSets
+
+        public DbSet<JobSeekerProfile> JobSeekerProfiles
+            => Set<JobSeekerProfile>();
+
+        public DbSet<JobSeekerSkill> JobSeekerSkills
+            => Set<JobSeekerSkill>();
+
+        public DbSet<Education> Educations
+            => Set<Education>();
+
+        public DbSet<Experience> Experiences
+            => Set<Experience>();
+
+        public DbSet<CvMetadata> CvMetadata
+            => Set<CvMetadata>();
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.ApplyConfigurationsFromAssembly(
+                typeof(ApplicationDbContext).Assembly);
+        }
+        //-----------last section of member 2 -------- 
     }
 }
