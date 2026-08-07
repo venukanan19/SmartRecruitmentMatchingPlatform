@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SmartRecruitment.API.Migrations
 {
     /// <inheritdoc />
-    public partial class AddJobSeekerModule : Migration
+    public partial class CompleteProjectSchema : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -57,7 +57,7 @@ namespace SmartRecruitment.API.Migrations
                 oldType: "nvarchar(max)");
 
             migrationBuilder.CreateTable(
-                name: "EmployerProfile",
+                name: "EmployerProfiles",
                 columns: table => new
                 {
                     EmployerProfileId = table.Column<int>(type: "int", nullable: false)
@@ -73,13 +73,13 @@ namespace SmartRecruitment.API.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_EmployerProfile", x => x.EmployerProfileId);
+                    table.PrimaryKey("PK_EmployerProfiles", x => x.EmployerProfileId);
                     table.ForeignKey(
-                        name: "FK_EmployerProfile_Users_UserId",
+                        name: "FK_EmployerProfiles_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "UserId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -96,8 +96,7 @@ namespace SmartRecruitment.API.Migrations
                     Country = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Bio = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UserId1 = table.Column<int>(type: "int", nullable: true)
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -108,11 +107,6 @@ namespace SmartRecruitment.API.Migrations
                         principalTable: "Users",
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_JobSeekerProfiles_Users_UserId1",
-                        column: x => x.UserId1,
-                        principalTable: "Users",
-                        principalColumn: "UserId");
                 });
 
             migrationBuilder.CreateTable(
@@ -139,7 +133,7 @@ namespace SmartRecruitment.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Skill",
+                name: "Skills",
                 columns: table => new
                 {
                     SkillId = table.Column<int>(type: "int", nullable: false)
@@ -148,7 +142,7 @@ namespace SmartRecruitment.API.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Skill", x => x.SkillId);
+                    table.PrimaryKey("PK_Skills", x => x.SkillId);
                 });
 
             migrationBuilder.CreateTable(
@@ -163,7 +157,7 @@ namespace SmartRecruitment.API.Migrations
                     Location = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
                     RequiredExperienceYears = table.Column<int>(type: "int", nullable: false),
                     EducationRequirement = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
-                    IsClosed = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -172,10 +166,39 @@ namespace SmartRecruitment.API.Migrations
                     table.PrimaryKey("PK_Vacancies", x => x.VacancyId);
                     table.CheckConstraint("CK_Vacancies_RequiredExperienceYears", "[RequiredExperienceYears] >= 0");
                     table.ForeignKey(
-                        name: "FK_Vacancies_EmployerProfile_EmployerProfileId",
+                        name: "FK_Vacancies_EmployerProfiles_EmployerProfileId",
                         column: x => x.EmployerProfileId,
-                        principalTable: "EmployerProfile",
+                        principalTable: "EmployerProfiles",
                         principalColumn: "EmployerProfileId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ContactRequests",
+                columns: table => new
+                {
+                    ContactRequestId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EmployerProfileId = table.Column<int>(type: "int", nullable: false),
+                    JobSeekerProfileId = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    RequestedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    RespondedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ContactRequests", x => x.ContactRequestId);
+                    table.ForeignKey(
+                        name: "FK_ContactRequests_EmployerProfiles_EmployerProfileId",
+                        column: x => x.EmployerProfileId,
+                        principalTable: "EmployerProfiles",
+                        principalColumn: "EmployerProfileId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ContactRequests_JobSeekerProfiles_JobSeekerProfileId",
+                        column: x => x.JobSeekerProfileId,
+                        principalTable: "JobSeekerProfiles",
+                        principalColumn: "JobSeekerProfileId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -263,8 +286,6 @@ namespace SmartRecruitment.API.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_JobSeekerSkills", x => new { x.JobSeekerProfileId, x.SkillId });
-                    table.CheckConstraint("CK_JobSeekerSkills_ProficiencyLevel", "[ProficiencyLevel] BETWEEN 1 AND 5");
-                    table.CheckConstraint("CK_JobSeekerSkills_YearsOfExperience", "[YearsOfExperience] >= 0");
                     table.ForeignKey(
                         name: "FK_JobSeekerSkills_JobSeekerProfiles_JobSeekerProfileId",
                         column: x => x.JobSeekerProfileId,
@@ -272,15 +293,45 @@ namespace SmartRecruitment.API.Migrations
                         principalColumn: "JobSeekerProfileId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_JobSeekerSkills_Skill_SkillId",
+                        name: "FK_JobSeekerSkills_Skills_SkillId",
                         column: x => x.SkillId,
-                        principalTable: "Skill",
+                        principalTable: "Skills",
                         principalColumn: "SkillId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "VacancySkill",
+                name: "Applications",
+                columns: table => new
+                {
+                    ApplicationId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    JobSeekerProfileId = table.Column<int>(type: "int", nullable: false),
+                    VacancyId = table.Column<int>(type: "int", nullable: false),
+                    CoverLetter = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    AppliedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Applications", x => x.ApplicationId);
+                    table.ForeignKey(
+                        name: "FK_Applications_JobSeekerProfiles_JobSeekerProfileId",
+                        column: x => x.JobSeekerProfileId,
+                        principalTable: "JobSeekerProfiles",
+                        principalColumn: "JobSeekerProfileId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Applications_Vacancies_VacancyId",
+                        column: x => x.VacancyId,
+                        principalTable: "Vacancies",
+                        principalColumn: "VacancyId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "VacancySkills",
                 columns: table => new
                 {
                     VacancyId = table.Column<int>(type: "int", nullable: false),
@@ -288,15 +339,15 @@ namespace SmartRecruitment.API.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_VacancySkill", x => new { x.VacancyId, x.SkillId });
+                    table.PrimaryKey("PK_VacancySkills", x => new { x.VacancyId, x.SkillId });
                     table.ForeignKey(
-                        name: "FK_VacancySkill_Skill_SkillId",
+                        name: "FK_VacancySkills_Skills_SkillId",
                         column: x => x.SkillId,
-                        principalTable: "Skill",
+                        principalTable: "Skills",
                         principalColumn: "SkillId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_VacancySkill_Vacancies_VacancyId",
+                        name: "FK_VacancySkills_Vacancies_VacancyId",
                         column: x => x.VacancyId,
                         principalTable: "Vacancies",
                         principalColumn: "VacancyId",
@@ -310,6 +361,27 @@ namespace SmartRecruitment.API.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Applications_JobSeekerProfileId_VacancyId_Unique",
+                table: "Applications",
+                columns: new[] { "JobSeekerProfileId", "VacancyId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Applications_VacancyId",
+                table: "Applications",
+                column: "VacancyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ContactRequests_EmployerProfileId",
+                table: "ContactRequests",
+                column: "EmployerProfileId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ContactRequests_JobSeekerProfileId",
+                table: "ContactRequests",
+                column: "JobSeekerProfileId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_CvMetadata_JobSeekerProfileId",
                 table: "CvMetadata",
                 column: "JobSeekerProfileId",
@@ -321,8 +393,8 @@ namespace SmartRecruitment.API.Migrations
                 column: "JobSeekerProfileId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_EmployerProfile_UserId",
-                table: "EmployerProfile",
+                name: "IX_EmployerProfiles_UserId",
+                table: "EmployerProfiles",
                 column: "UserId",
                 unique: true);
 
@@ -338,13 +410,6 @@ namespace SmartRecruitment.API.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_JobSeekerProfiles_UserId1",
-                table: "JobSeekerProfiles",
-                column: "UserId1",
-                unique: true,
-                filter: "[UserId1] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_JobSeekerSkills_SkillId",
                 table: "JobSeekerSkills",
                 column: "SkillId");
@@ -355,8 +420,8 @@ namespace SmartRecruitment.API.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Skill_Name",
-                table: "Skill",
+                name: "IX_Skills_Name",
+                table: "Skills",
                 column: "Name",
                 unique: true);
 
@@ -366,14 +431,20 @@ namespace SmartRecruitment.API.Migrations
                 column: "EmployerProfileId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_VacancySkill_SkillId",
-                table: "VacancySkill",
+                name: "IX_VacancySkills_SkillId",
+                table: "VacancySkills",
                 column: "SkillId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Applications");
+
+            migrationBuilder.DropTable(
+                name: "ContactRequests");
+
             migrationBuilder.DropTable(
                 name: "CvMetadata");
 
@@ -390,19 +461,19 @@ namespace SmartRecruitment.API.Migrations
                 name: "Notifications");
 
             migrationBuilder.DropTable(
-                name: "VacancySkill");
+                name: "VacancySkills");
 
             migrationBuilder.DropTable(
                 name: "JobSeekerProfiles");
 
             migrationBuilder.DropTable(
-                name: "Skill");
+                name: "Skills");
 
             migrationBuilder.DropTable(
                 name: "Vacancies");
 
             migrationBuilder.DropTable(
-                name: "EmployerProfile");
+                name: "EmployerProfiles");
 
             migrationBuilder.DropIndex(
                 name: "IX_Users_Email",

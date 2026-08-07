@@ -16,7 +16,6 @@ namespace SmartRecruitment.API.Data
 
         public DbSet<Notification> Notifications { get; set; }
 
-        
         public DbSet<ContactRequest> ContactRequests { get; set; }
 
         // Member 2 DbSets
@@ -48,6 +47,10 @@ namespace SmartRecruitment.API.Data
         public DbSet<VacancySkill> VacancySkills
             => Set<VacancySkill>();
 
+        // Member 4 DbSets
+        public DbSet<Application> Applications
+            => Set<Application>();
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -55,9 +58,5 @@ namespace SmartRecruitment.API.Data
             modelBuilder.ApplyConfigurationsFromAssembly(
                 typeof(ApplicationDbContext).Assembly);
         }
-
-        // Member 4 DbSets
-        public DbSet<Application> Applications
-        => Set<Application>();
     }
 }

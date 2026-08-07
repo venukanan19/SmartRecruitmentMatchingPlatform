@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using SmartRecruitment.API.Enums;
 using SmartRecruitment.API.Models.Entities;
 
 namespace SmartRecruitment.API.Data.Configurations
 {
-    public class VacancyConfiguration : IEntityTypeConfiguration<Vacancy>
+    public class VacancyConfiguration
+        : IEntityTypeConfiguration<Vacancy>
     {
         public void Configure(EntityTypeBuilder<Vacancy> builder)
         {
@@ -16,8 +16,10 @@ namespace SmartRecruitment.API.Data.Configurations
                     "[RequiredExperienceYears] >= 0");
             });
 
+            // Primary Key
             builder.HasKey(vacancy => vacancy.VacancyId);
 
+            // Properties
             builder.Property(vacancy => vacancy.Title)
                 .IsRequired()
                 .HasMaxLength(200);
@@ -37,11 +39,12 @@ namespace SmartRecruitment.API.Data.Configurations
                 .IsRequired()
                 .HasMaxLength(300);
 
+            // Vacancy Status
             builder.Property(vacancy => vacancy.Status)
                 .HasConversion<int>()
-                .IsRequired()
-                .HasDefaultValue(VacancyStatus.Open);
+                .IsRequired();
 
+            // EmployerProfile 1 -> many Vacancies
             builder.HasOne(vacancy => vacancy.EmployerProfile)
                 .WithMany(employerProfile => employerProfile.Vacancies)
                 .HasForeignKey(vacancy => vacancy.EmployerProfileId)
