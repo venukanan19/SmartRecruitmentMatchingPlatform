@@ -12,8 +12,8 @@ using SmartRecruitment.API.Data;
 namespace SmartRecruitment.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260806104738_AddJobSeekerModule")]
-    partial class AddJobSeekerModule
+    [Migration("20260807091425_CompleteProjectSchema")]
+    partial class CompleteProjectSchema
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,76 @@ namespace SmartRecruitment.API.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("SmartRecruitment.API.Models.Entities.Application", b =>
+                {
+                    b.Property<int>("ApplicationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ApplicationId"));
+
+                    b.Property<DateTime>("AppliedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CoverLetter")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("JobSeekerProfileId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("VacancyId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ApplicationId");
+
+                    b.HasIndex("VacancyId");
+
+                    b.HasIndex("JobSeekerProfileId", "VacancyId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Applications_JobSeekerProfileId_VacancyId_Unique");
+
+                    b.ToTable("Applications", (string)null);
+                });
+
+            modelBuilder.Entity("SmartRecruitment.API.Models.Entities.ContactRequest", b =>
+                {
+                    b.Property<int>("ContactRequestId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ContactRequestId"));
+
+                    b.Property<int>("EmployerProfileId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("JobSeekerProfileId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("RequestedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("RespondedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("ContactRequestId");
+
+                    b.HasIndex("EmployerProfileId");
+
+                    b.HasIndex("JobSeekerProfileId");
+
+                    b.ToTable("ContactRequests");
+                });
 
             modelBuilder.Entity("SmartRecruitment.API.Models.Entities.CvMetadata", b =>
                 {
@@ -143,7 +213,7 @@ namespace SmartRecruitment.API.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("EmployerProfile");
+                    b.ToTable("EmployerProfiles", (string)null);
                 });
 
             modelBuilder.Entity("SmartRecruitment.API.Models.Entities.Experience", b =>
@@ -235,17 +305,10 @@ namespace SmartRecruitment.API.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("UserId1")
-                        .HasColumnType("int");
-
                     b.HasKey("JobSeekerProfileId");
 
                     b.HasIndex("UserId")
                         .IsUnique();
-
-                    b.HasIndex("UserId1")
-                        .IsUnique()
-                        .HasFilter("[UserId1] IS NOT NULL");
 
                     b.ToTable("JobSeekerProfiles", (string)null);
                 });
@@ -262,12 +325,7 @@ namespace SmartRecruitment.API.Migrations
 
                     b.HasIndex("SkillId");
 
-                    b.ToTable("JobSeekerSkills", null, t =>
-                        {
-                            t.HasCheckConstraint("CK_JobSeekerSkills_ProficiencyLevel", "[ProficiencyLevel] BETWEEN 1 AND 5");
-
-                            t.HasCheckConstraint("CK_JobSeekerSkills_YearsOfExperience", "[YearsOfExperience] >= 0");
-                        });
+                    b.ToTable("JobSeekerSkills", (string)null);
                 });
 
             modelBuilder.Entity("SmartRecruitment.API.Models.Entities.Notification", b =>
@@ -326,7 +384,7 @@ namespace SmartRecruitment.API.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Skill");
+                    b.ToTable("Skills");
                 });
 
             modelBuilder.Entity("SmartRecruitment.API.Models.Entities.User", b =>
@@ -397,17 +455,15 @@ namespace SmartRecruitment.API.Migrations
                     b.Property<int>("EmployerProfileId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsClosed")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
                     b.Property<string>("Location")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
                     b.Property<int>("RequiredExperienceYears")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
@@ -440,7 +496,45 @@ namespace SmartRecruitment.API.Migrations
 
                     b.HasIndex("SkillId");
 
-                    b.ToTable("VacancySkill");
+                    b.ToTable("VacancySkills");
+                });
+
+            modelBuilder.Entity("SmartRecruitment.API.Models.Entities.Application", b =>
+                {
+                    b.HasOne("SmartRecruitment.API.Models.Entities.JobSeekerProfile", "JobSeekerProfile")
+                        .WithMany()
+                        .HasForeignKey("JobSeekerProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SmartRecruitment.API.Models.Entities.Vacancy", "Vacancy")
+                        .WithMany()
+                        .HasForeignKey("VacancyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("JobSeekerProfile");
+
+                    b.Navigation("Vacancy");
+                });
+
+            modelBuilder.Entity("SmartRecruitment.API.Models.Entities.ContactRequest", b =>
+                {
+                    b.HasOne("SmartRecruitment.API.Models.Entities.EmployerProfile", "EmployerProfile")
+                        .WithMany()
+                        .HasForeignKey("EmployerProfileId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SmartRecruitment.API.Models.Entities.JobSeekerProfile", "JobSeekerProfile")
+                        .WithMany()
+                        .HasForeignKey("JobSeekerProfileId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("EmployerProfile");
+
+                    b.Navigation("JobSeekerProfile");
                 });
 
             modelBuilder.Entity("SmartRecruitment.API.Models.Entities.CvMetadata", b =>
@@ -470,7 +564,7 @@ namespace SmartRecruitment.API.Migrations
                     b.HasOne("SmartRecruitment.API.Models.Entities.User", "User")
                         .WithOne("EmployerProfile")
                         .HasForeignKey("SmartRecruitment.API.Models.Entities.EmployerProfile", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -490,14 +584,10 @@ namespace SmartRecruitment.API.Migrations
             modelBuilder.Entity("SmartRecruitment.API.Models.Entities.JobSeekerProfile", b =>
                 {
                     b.HasOne("SmartRecruitment.API.Models.Entities.User", "User")
-                        .WithOne()
+                        .WithOne("JobSeekerProfile")
                         .HasForeignKey("SmartRecruitment.API.Models.Entities.JobSeekerProfile", "UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("SmartRecruitment.API.Models.Entities.User", null)
-                        .WithOne("JobSeekerProfile")
-                        .HasForeignKey("SmartRecruitment.API.Models.Entities.JobSeekerProfile", "UserId1");
 
                     b.Navigation("User");
                 });
@@ -511,7 +601,7 @@ namespace SmartRecruitment.API.Migrations
                         .IsRequired();
 
                     b.HasOne("SmartRecruitment.API.Models.Entities.Skill", "Skill")
-                        .WithMany()
+                        .WithMany("JobSeekerSkills")
                         .HasForeignKey("SkillId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -580,6 +670,8 @@ namespace SmartRecruitment.API.Migrations
 
             modelBuilder.Entity("SmartRecruitment.API.Models.Entities.Skill", b =>
                 {
+                    b.Navigation("JobSeekerSkills");
+
                     b.Navigation("VacancySkills");
                 });
 
