@@ -17,7 +17,7 @@ namespace SmartRecruitment.API.Data
         public DbSet<Notification> Notifications { get; set; }
 
         
-        //public DbSet<ContactRequest> ContactRequests { get; set; }
+        public DbSet<ContactRequest> ContactRequests { get; set; }
 
         // Member 2 DbSets
         public DbSet<JobSeekerProfile> JobSeekerProfiles
@@ -55,5 +55,9 @@ namespace SmartRecruitment.API.Data
             modelBuilder.ApplyConfigurationsFromAssembly(
                 typeof(ApplicationDbContext).Assembly);
         }
+
+        // Member 4 DbSets
+        //public DbSet<Application> Applications
+        //=> Set<Application>();
     }
 }
