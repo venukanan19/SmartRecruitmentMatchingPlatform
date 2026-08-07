@@ -57,7 +57,7 @@ namespace SmartRecruitment.API.Data
         }
 
         // Member 4 DbSets
-        //public DbSet<Application> Applications
-        //=> Set<Application>();
+        public DbSet<Application> Applications
+        => Set<Application>();
     }
 }
