@@ -4,12 +4,12 @@ using SmartRecruitment.API.Models.Entities;
 
 namespace SmartRecruitment.API.Data.Configurations
 {
-    public class JobSeekerProfileConfiguration : IEntityTypeConfiguration<JobSeekerProfile>
+    public class JobSeekerProfileConfiguration
+        : IEntityTypeConfiguration<JobSeekerProfile>
     {
         public void Configure(
             EntityTypeBuilder<JobSeekerProfile> builder)
         {
-            // Table name
             builder.ToTable("JobSeekerProfiles");
 
             // Primary key
@@ -31,7 +31,6 @@ namespace SmartRecruitment.API.Data.Configurations
                 .IsRequired()
                 .HasMaxLength(100);
 
-            
             builder.Property(x => x.Address)
                 .HasMaxLength(250);
 
@@ -56,7 +55,7 @@ namespace SmartRecruitment.API.Data.Configurations
 
             // User 1 -> 0 or 1 JobSeekerProfile
             builder.HasOne(x => x.User)
-                .WithOne()
+                .WithOne(x => x.JobSeekerProfile)
                 .HasForeignKey<JobSeekerProfile>(x => x.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
@@ -77,9 +76,6 @@ namespace SmartRecruitment.API.Data.Configurations
                 .WithOne(x => x.JobSeekerProfile)
                 .HasForeignKey(x => x.JobSeekerProfileId)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            
         }
-
     }
 }

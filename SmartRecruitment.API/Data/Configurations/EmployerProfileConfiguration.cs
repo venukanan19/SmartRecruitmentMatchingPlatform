@@ -10,7 +10,14 @@ namespace SmartRecruitment.API.Data.Configurations
         public void Configure(
             EntityTypeBuilder<EmployerProfile> builder)
         {
+            builder.ToTable("EmployerProfiles");
+
+            // Primary Key
             builder.HasKey(employer => employer.EmployerProfileId);
+
+            // One User can have only one Employer Profile
+            builder.HasIndex(employer => employer.UserId)
+                .IsUnique();
 
             builder.Property(employer => employer.CompanyName)
                 .IsRequired()
@@ -31,6 +38,14 @@ namespace SmartRecruitment.API.Data.Configurations
             builder.Property(employer => employer.Website)
                 .HasMaxLength(300);
 
+            // User 1 -> 0 or 1 EmployerProfile
+            builder.HasOne(employer => employer.User)
+                .WithOne(user => user.EmployerProfile)
+                .HasForeignKey<EmployerProfile>(
+                    employer => employer.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // EmployerProfile 1 -> many Vacancies
             builder.HasMany(employer => employer.Vacancies)
                 .WithOne(vacancy => vacancy.EmployerProfile)
                 .HasForeignKey(vacancy => vacancy.EmployerProfileId)
