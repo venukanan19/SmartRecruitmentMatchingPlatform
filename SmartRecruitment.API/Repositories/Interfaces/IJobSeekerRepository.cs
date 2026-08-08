@@ -19,6 +19,7 @@ namespace SmartRecruitment.API.Repositories
             int skillId);
 
         // Job Seeker Skills
+        // Job Seeker skills
         Task<bool> HasSkillAsync(
             int profileId,
             int skillId);
@@ -29,9 +30,6 @@ namespace SmartRecruitment.API.Repositories
         Task<JobSeekerSkill?> GetSkillRelationAsync(
             int userId,
             int skillId);
-
-        void UpdateSkill(
-            JobSeekerSkill jobSeekerSkill);
 
         void RemoveSkill(
             JobSeekerSkill jobSeekerSkill);

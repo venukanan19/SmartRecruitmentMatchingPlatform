@@ -28,11 +28,7 @@
 
   <ItemGroup>
     <Folder Include="Data\Seed\" />
-    <Folder Include="Helpers\" />
     <Folder Include="Middleware\" />
-    <Folder Include="Constants\" />
-    <Folder Include="Models\Common\" />
-    <Folder Include="Extensions\" />
     <Folder Include="Storage\CVs\" />
   </ItemGroup>
 
