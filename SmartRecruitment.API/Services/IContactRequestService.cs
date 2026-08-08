@@ -4,7 +4,8 @@ namespace SmartRecruitment.API.Services
 {
     public interface IContactRequestService
     {
-        Task<ContactRequestResponseDto?> GetByIdAsync(int contactRequestId);
+        Task<ContactRequestResponseDto?> GetByIdAsync(
+            int contactRequestId);
 
         Task<IEnumerable<ContactRequestResponseDto>> GetByEmployerIdAsync(
             int employerProfileId);
@@ -13,6 +14,7 @@ namespace SmartRecruitment.API.Services
             int jobSeekerProfileId);
 
         Task<ContactRequestResponseDto> CreateAsync(
+            int employerProfileId,
             CreateContactRequestDto request);
 
         Task<bool> UpdateStatusAsync(

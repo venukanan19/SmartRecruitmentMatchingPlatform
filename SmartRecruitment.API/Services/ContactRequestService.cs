@@ -46,11 +46,12 @@ namespace SmartRecruitment.API.Services
         }
 
         public async Task<ContactRequestResponseDto> CreateAsync(
+            int employerProfileId,
             CreateContactRequestDto request)
         {
             var contactRequest = new ContactRequest
             {
-                //EmployerProfileId = request.EmployerProfileId,
+                EmployerProfileId = employerProfileId,
                 JobSeekerProfileId = request.JobSeekerProfileId,
                 Status = ContactRequestStatus.pending,
                 RequestedAt = DateTime.UtcNow

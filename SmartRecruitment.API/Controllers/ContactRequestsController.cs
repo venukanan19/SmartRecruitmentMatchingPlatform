@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SmartRecruitment.API.Models.DTOs.ContactRequest;
+using SmartRecruitment.API.Repositories.Interfaces;
 using SmartRecruitment.API.Services;
+using System.Security.Claims;
 
 namespace SmartRecruitment.API.Controllers
 {
@@ -11,18 +13,22 @@ namespace SmartRecruitment.API.Controllers
     public class ContactRequestsController : ControllerBase
     {
         private readonly IContactRequestService _contactRequestService;
+        private readonly IEmployerRepository _employerRepository;
 
         public ContactRequestsController(
-            IContactRequestService contactRequestService)
+            IContactRequestService contactRequestService,
+            IEmployerRepository employerRepository)
         {
             _contactRequestService = contactRequestService;
+            _employerRepository = employerRepository;
         }
 
         [HttpGet("{contactRequestId:int}")]
         public async Task<IActionResult> GetById(int contactRequestId)
         {
             var result =
-                await _contactRequestService.GetByIdAsync(contactRequestId);
+                await _contactRequestService.GetByIdAsync(
+                    contactRequestId);
 
             if (result == null)
             {
@@ -63,13 +69,28 @@ namespace SmartRecruitment.API.Controllers
                 return ValidationProblem(ModelState);
             }
 
-            // EmployerProfileId is not available in the current
-            // CreateContactRequestDto.
-            // Do not create the request until the authenticated
-            // EmployerProfileId source is confirmed.
+            var userIdClaim =
+                User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            return BadRequest(
-                "Employer profile identification is not configured yet.");
+            if (!int.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized();
+            }
+
+            var employerProfile =
+                await _employerRepository.GetByUserIdAsync(userId);
+
+            if (employerProfile == null)
+            {
+                return Forbid();
+            }
+
+            var result =
+                await _contactRequestService.CreateAsync(
+                    employerProfile.EmployerProfileId,
+                    request);
+
+            return Ok(result);
         }
 
         [HttpPut("{contactRequestId:int}/status")]
