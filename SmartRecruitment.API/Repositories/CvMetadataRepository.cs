@@ -1,6 +1,7 @@
 ﻿using SmartRecruitment.API.Data;
 using SmartRecruitment.API.Models.Entities;
 using SmartRecruitment.API.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace SmartRecruitment.API.Repositories
 {
@@ -15,19 +16,19 @@ namespace SmartRecruitment.API.Repositories
             _context = context;
         }
 
-        //public async Task<CvMetadata?>
-        //    GetByUserIdAsync(
-        //        int userId)
-        //{
-        //    return await _context.CvMetadata
-        //        .Include(
-        //            metadata =>
-        //                metadata.JobSeekerProfile)
-        //        .FirstOrDefaultAsync(
-        //            metadata =>
-        //                metadata.JobSeekerProfile.UserId ==
-        //                    userId);
-        //}
+        public async Task<CvMetadata?>
+            GetByUserIdAsync(
+                int userId)
+        {
+            return await _context.CvMetadata
+                .Include(
+                    metadata =>
+                        metadata.JobSeekerProfile)
+                .FirstOrDefaultAsync(
+                    metadata =>
+                        metadata.JobSeekerProfile.UserId ==
+                            userId);
+        }
 
         public async Task AddAsync(
             CvMetadata metadata)

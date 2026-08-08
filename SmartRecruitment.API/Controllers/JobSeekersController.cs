@@ -1,356 +1,357 @@
-﻿//using Microsoft.AspNetCore.Http;
-//using Microsoft.AspNetCore.Mvc;
-//using SmartRecruitment.API.Constants;
-//using SmartRecruitment.API.Models.DTOs.JobSeeker;
-//using SmartRecruitment.API.Models.Entities;
-//using SmartRecruitment.API.Services.Interfaces;
+﻿
+using Microsoft.AspNetCore.Mvc;
+using SmartRecruitment.API.Constants;
+using SmartRecruitment.API.Models.DTOs.JobSeeker;
+using SmartRecruitment.API.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
-//namespace SmartRecruitment.API.Controllers
-//{
-//    [Route("api/[controller/me")]
-//    [ApiController]
-//    [Authorize(Roles = "JobSeeker")]
-//    public class JobSeekersController : ControllerBase
-//    {
-//        private readonly IJobSeekerService
-//            _jobSeekerService;
+namespace SmartRecruitment.API.Controllers
+{
+    [Route("api/[controller/me")]
+    [ApiController]
+    [Authorize(Roles = "JobSeeker")]
+    public class JobSeekersController : ControllerBase
+    {
+        private readonly IJobSeekerService
+            _jobSeekerService;
 
-//        private readonly ICvStorageService
-//            _cvStorageService;
+        private readonly ICvStorageService
+            _cvStorageService;
 
-//        public JobSeekersController(
-//            IJobSeekerService jobSeekerService,
-//            ICvStorageService cvStorageService)
-//        {
-//            _jobSeekerService =
-//                jobSeekerService;
+        public JobSeekersController(
+            IJobSeekerService jobSeekerService,
+            ICvStorageService cvStorageService)
+        {
+            _jobSeekerService =
+                jobSeekerService;
 
-//            _cvStorageService =
-//                cvStorageService;
-//        }
+            _cvStorageService =
+                cvStorageService;
+        }
 
-//        // =========================================================
-//        // Profile
-//        // =========================================================
+        // =========================================================
+        // Profile
+        // =========================================================
 
-//        [HttpGet]
-//        public async Task<
-//            ActionResult<JobSeekerProfileResponseDto>>
-//            GetCurrentProfile()
-//        {
-//            var userId =
-//                GetAuthenticatedUserId();
+        [HttpGet]
+        public async Task<
+            ActionResult<JobSeekerProfileResponseDto>>
+            GetCurrentProfile()
+        {
+            var userId =
+                GetAuthenticatedUserId();
 
-//            var profile =
-//                await _jobSeekerService
-//                    .GetCurrentProfileAsync(
-//                        userId);
+            var profile =
+                await _jobSeekerService
+                    .GetCurrentProfileAsync(
+                        userId);
 
-//            if (profile is null)
-//            {
-//                return NotFound(
-//                    new
-//                    {
-//                        message =
-//                            "Job Seeker profile was not found."
-//                    });
-//            }
+            if (profile is null)
+            {
+                return NotFound(
+                    new
+                    {
+                        message =
+                            "Job Seeker profile was not found."
+                    });
+            }
 
-//            return Ok(profile);
-//        }
+            return Ok(profile);
+        }
 
-//        [HttpPut]
-//        public async Task<
-//            ActionResult<JobSeekerProfileResponseDto>>
-//            UpdateCurrentProfile(
-//                [FromBody]
-//                UpdateJobSeekerProfileRequestDto request)
-//        {
-//            var profile =
-//                await _jobSeekerService
-//                    .CreateOrUpdateProfileAsync(
-//                        GetAuthenticatedUserId(),
-//                        request);
+        [HttpPut]
+        public async Task<
+            ActionResult<JobSeekerProfileResponseDto>>
+            UpdateCurrentProfile(
+                [FromBody]
+                UpdateJobSeekerProfileRequestDto request)
+        {
+            var profile =
+                await _jobSeekerService
+                    .CreateOrUpdateProfileAsync(
+                        GetAuthenticatedUserId(),
+                        request);
 
-//            return Ok(profile);
-//        }
+            return Ok(profile);
+        }
 
-//        // =========================================================
-//        // Skills
-//        // =========================================================
+        // =========================================================
+        // Skills
+        // =========================================================
 
-//        [HttpGet("skills")]
-//        public async Task<ActionResult<
-//            IReadOnlyList<JobSeekerSkillResponseDto>>>
-//            GetSkills()
-//        {
-//            var skills =
-//                await _jobSeekerService
-//                    .GetSkillsAsync(
-//                        GetAuthenticatedUserId());
+        [HttpGet("skills")]
+        public async Task<ActionResult<
+            IReadOnlyList<JobSeekerSkillResponseDto>>>
+            GetSkills()
+        {
+            var skills =
+                await _jobSeekerService
+                    .GetSkillsAsync(
+                        GetAuthenticatedUserId());
 
-//            return Ok(skills);
-//        }
+            return Ok(skills);
+        }
 
-//        [HttpPost("skills")]
-//        public async Task<
-//            ActionResult<JobSeekerSkillResponseDto>>
-//            AddSkill(
-//                [FromBody]
-//                AddJobSeekerSkillRequestDto request)
-//        {
-//            var result =
-//                await _jobSeekerService
-//                    .AddSkillAsync(
-//                        GetAuthenticatedUserId(),
-//                        request);
+        [HttpPost("skills")]
+        public async Task<
+            ActionResult<JobSeekerSkillResponseDto>>
+            AddSkill(
+                [FromBody]
+                AddJobSeekerSkillRequestDto request)
+        {
+            var result =
+                await _jobSeekerService
+                    .AddSkillAsync(
+                        GetAuthenticatedUserId(),
+                        request);
 
-//            return StatusCode(
-//                StatusCodes.Status201Created,
-//                result);
-//        }
-
-//       
+            return StatusCode(
+                StatusCodes.Status201Created,
+                result);
+        }
 
 
-//        [HttpDelete("skills/{skillId:int}")]
-//        public async Task<IActionResult>
-//            RemoveSkill(
-//                int skillId)
-//        {
-//            await _jobSeekerService
-//                .RemoveSkillAsync(
-//                    GetAuthenticatedUserId(),
-//                    skillId);
 
-//            return NoContent();
-//        }
 
-//        // =========================================================
-//        // Education
-//        // =========================================================
+        [HttpDelete("skills/{skillId:int}")]
+        public async Task<IActionResult>
+            RemoveSkill(
+                int skillId)
+        {
+            await _jobSeekerService
+                .RemoveSkillAsync(
+                    GetAuthenticatedUserId(),
+                    skillId);
 
-//        [HttpGet("education")]
-//        public async Task<
-//            ActionResult<IReadOnlyList<EducationResponseDto>>>
-//            GetEducation()
-//        {
-//            var result =
-//                await _jobSeekerService
-//                    .GetEducationAsync(
-//                        GetAuthenticatedUserId());
+            return NoContent();
+        }
 
-//            return Ok(result);
-//        }
+        // =========================================================
+        // Education
+        // =========================================================
 
-//        [HttpPost("education")]
-//        public async Task<
-//            ActionResult<EducationResponseDto>>
-//            CreateEducation(
-//                [FromBody]
-//                CreateEducationRequestDto request)
-//        {
-//            var result =
-//                await _jobSeekerService
-//                    .CreateEducationAsync(
-//                        GetAuthenticatedUserId(),
-//                        request);
+        [HttpGet("education")]
+        public async Task<
+            ActionResult<IReadOnlyList<EducationResponseDto>>>
+            GetEducation()
+        {
+            var result =
+                await _jobSeekerService
+                    .GetEducationAsync(
+                        GetAuthenticatedUserId());
 
-//            return StatusCode(
-//                StatusCodes.Status201Created,
-//                result);
-//        }
+            return Ok(result);
+        }
 
-//        [HttpPut("education/{educationId:int}")]
-//        public async Task<
-//            ActionResult<EducationResponseDto>>
-//            UpdateEducation(
-//                int educationId,
-//                [FromBody]
-//                UpdateEducationRequestDto request)
-//        {
-//            var result =
-//                await _jobSeekerService
-//                    .UpdateEducationAsync(
-//                        GetAuthenticatedUserId(),
-//                        educationId,
-//                        request);
+        [HttpPost("education")]
+        public async Task<
+            ActionResult<EducationResponseDto>>
+            CreateEducation(
+                [FromBody]
+                CreateEducationRequestDto request)
+        {
+            var result =
+                await _jobSeekerService
+                    .CreateEducationAsync(
+                        GetAuthenticatedUserId(),
+                        request);
 
-//            return Ok(result);
-//        }
+            return StatusCode(
+                StatusCodes.Status201Created,
+                result);
+        }
 
-//        [HttpDelete("education/{educationId:int}")]
-//        public async Task<IActionResult>
-//            DeleteEducation(
-//                int educationId)
-//        {
-//            await _jobSeekerService
-//                .DeleteEducationAsync(
-//                    GetAuthenticatedUserId(),
-//                    educationId);
+        [HttpPut("education/{educationId:int}")]
+        public async Task<
+            ActionResult<EducationResponseDto>>
+            UpdateEducation(
+                int educationId,
+                [FromBody]
+                UpdateEducationRequestDto request)
+        {
+            var result =
+                await _jobSeekerService
+                    .UpdateEducationAsync(
+                        GetAuthenticatedUserId(),
+                        educationId,
+                        request);
 
-//            return NoContent();
-//        }
+            return Ok(result);
+        }
 
-//        // =========================================================
-//        // Experience
-//        // =========================================================
+        [HttpDelete("education/{educationId:int}")]
+        public async Task<IActionResult>
+            DeleteEducation(
+                int educationId)
+        {
+            await _jobSeekerService
+                .DeleteEducationAsync(
+                    GetAuthenticatedUserId(),
+                    educationId);
 
-//        [HttpGet("experiences")]
-//        public async Task<
-//            ActionResult<IReadOnlyList<ExperienceResponseDto>>>
-//            GetExperiences()
-//        {
-//            var result =
-//                await _jobSeekerService
-//                    .GetExperiencesAsync(
-//                        GetAuthenticatedUserId());
+            return NoContent();
+        }
 
-//            return Ok(result);
-//        }
+        // =========================================================
+        // Experience
+        // =========================================================
 
-//        [HttpPost("experiences")]
-//        public async Task<
-//            ActionResult<ExperienceResponseDto>>
-//            CreateExperience(
-//                [FromBody]
-//                CreateExperienceRequestDto request)
-//        {
-//            var result =
-//                await _jobSeekerService
-//                    .CreateExperienceAsync(
-//                        GetAuthenticatedUserId(),
-//                        request);
+        [HttpGet("experiences")]
+        public async Task<
+            ActionResult<IReadOnlyList<ExperienceResponseDto>>>
+            GetExperiences()
+        {
+            var result =
+                await _jobSeekerService
+                    .GetExperiencesAsync(
+                        GetAuthenticatedUserId());
 
-//            return StatusCode(
-//                StatusCodes.Status201Created,
-//                result);
-//        }
+            return Ok(result);
+        }
 
-//        [HttpPut(
-//            "experiences/{experienceId:int}")]
-//        public async Task<
-//            ActionResult<ExperienceResponseDto>>
-//            UpdateExperience(
-//                int experienceId,
-//                [FromBody]
-//                UpdateExperienceRequestDto request)
-//        {
-//            var result =
-//                await _jobSeekerService
-//                    .UpdateExperienceAsync(
-//                        GetAuthenticatedUserId(),
-//                        experienceId,
-//                        request);
+        [HttpPost("experiences")]
+        public async Task<
+            ActionResult<ExperienceResponseDto>>
+            CreateExperience(
+                [FromBody]
+                CreateExperienceRequestDto request)
+        {
+            var result =
+                await _jobSeekerService
+                    .CreateExperienceAsync(
+                        GetAuthenticatedUserId(),
+                        request);
 
-//            return Ok(result);
-//        }
+            return StatusCode(
+                StatusCodes.Status201Created,
+                result);
+        }
 
-//        [HttpDelete(
-//            "experiences/{experienceId:int}")]
-//        public async Task<IActionResult>
-//            DeleteExperience(
-//                int experienceId)
-//        {
-//            await _jobSeekerService
-//                .DeleteExperienceAsync(
-//                    GetAuthenticatedUserId(),
-//                    experienceId);
+        [HttpPut(
+            "experiences/{experienceId:int}")]
+        public async Task<
+            ActionResult<ExperienceResponseDto>>
+            UpdateExperience(
+                int experienceId,
+                [FromBody]
+                UpdateExperienceRequestDto request)
+        {
+            var result =
+                await _jobSeekerService
+                    .UpdateExperienceAsync(
+                        GetAuthenticatedUserId(),
+                        experienceId,
+                        request);
 
-//            return NoContent();
-//        }
+            return Ok(result);
+        }
 
-//        // =========================================================
-//        // CV
-//        // =========================================================
+        [HttpDelete(
+            "experiences/{experienceId:int}")]
+        public async Task<IActionResult>
+            DeleteExperience(
+                int experienceId)
+        {
+            await _jobSeekerService
+                .DeleteExperienceAsync(
+                    GetAuthenticatedUserId(),
+                    experienceId);
 
-//        [HttpPost("cv")]
-//        [Consumes("multipart/form-data")]
-//        [RequestSizeLimit(
-//            CvStorageConstants
-//                .MaximumFileSizeBytes)]
-//        public async Task<
-//            ActionResult<CvUploadResponseDto>>
-//            UploadCv(
-//                [FromForm]
-//                IFormFile file)
-//        {
-//            var result =
-//                await _cvStorageService
-//                    .UploadOrReplaceAsync(
-//                        GetAuthenticatedUserId(),
-//                        file);
+            return NoContent();
+        }
 
-//            return Ok(result);
-//        }
+        // =========================================================
+        // CV
+        // =========================================================
 
-//        [HttpGet("cv/metadata")]
-//        public async Task<
-//            ActionResult<CvMetadataResponseDto>>
-//            GetCvMetadata()
-//        {
-//            var metadata =
-//                await _cvStorageService
-//                    .GetMetadataAsync(
-//                        GetAuthenticatedUserId());
+        [HttpPost("cv")]
+        [Consumes("multipart/form-data")]
+        [RequestSizeLimit(
+            CvStorageConstants
+                .MaximumFileSizeBytes)]
+        public async Task<
+            ActionResult<CvUploadResponseDto>>
+            UploadCv(
+                [FromForm]
+                IFormFile file)
+        {
+            var result =
+                await _cvStorageService
+                    .UploadOrReplaceAsync(
+                        GetAuthenticatedUserId(),
+                        file);
 
-//            if (metadata is null)
-//            {
-//                return NotFound(
-//                    new
-//                    {
-//                        message =
-//                            "CV metadata was not found."
-//                    });
-//            }
+            return Ok(result);
+        }
 
-//            return Ok(metadata);
-//        }
+        [HttpGet("cv/metadata")]
+        public async Task<
+            ActionResult<CvMetadataResponseDto>>
+            GetCvMetadata()
+        {
+            var metadata =
+                await _cvStorageService
+                    .GetMetadataAsync(
+                        GetAuthenticatedUserId());
 
-//        [HttpGet("cv/content")]
-//        public async Task<IActionResult>
-//            GetCvContent()
-//        {
-//            var result =
-//                await _cvStorageService
-//                    .GetContentAsync(
-//                        GetAuthenticatedUserId());
+            if (metadata is null)
+            {
+                return NotFound(
+                    new
+                    {
+                        message =
+                            "CV metadata was not found."
+                    });
+            }
 
-//            if (result is null)
-//            {
-//                return NotFound(
-//                    new
-//                    {
-//                        message =
-//                            "CV file was not found."
-//                    });
-//            }
+            return Ok(metadata);
+        }
 
-//            return File(
-//                result.Stream,
-//                result.ContentType,
-//                result.DownloadFileName);
-//        }
+        [HttpGet("cv/content")]
+        public async Task<IActionResult>
+            GetCvContent()
+        {
+            var result =
+                await _cvStorageService
+                    .GetContentAsync(
+                        GetAuthenticatedUserId());
 
-//        // =========================================================
-//        // Current authenticated user
-//        // =========================================================
+            if (result is null)
+            {
+                return NotFound(
+                    new
+                    {
+                        message =
+                            "CV file was not found."
+                    });
+            }
 
-//        //private int GetAuthenticatedUserId()
-//        //{
-//        //    var value =
-//        //        User.FindFirstValue(
-//        //            ClaimTypes.NameIdentifier);
+            return File(
+                result.Stream,
+                result.ContentType,
+                result.DownloadFileName);
+        }
 
-//        //    if (!int.TryParse(
-//        //        value,
-//        //        out var userId))
-//        //    {
-//        //        throw new UnauthorizedAccessException(
-//        //            "The authenticated UserId claim is missing or invalid.");
-//        //    }
+        // =========================================================
+        // Current authenticated user
+        // =========================================================
 
-//        //    return userId;
-//        //}
-//    }
-//}
+        private int GetAuthenticatedUserId()
+        {
+            var value =
+                User.FindFirstValue(
+                    ClaimTypes.NameIdentifier);
+
+            if (!int.TryParse(
+                value,
+                out var userId))
+            {
+                throw new UnauthorizedAccessException(
+                    "The authenticated UserId claim is missing or invalid.");
+            }
+
+            return userId;
+        }
+    }
+}

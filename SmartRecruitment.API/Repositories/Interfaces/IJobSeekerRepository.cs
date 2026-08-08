@@ -17,8 +17,7 @@ namespace SmartRecruitment.API.Repositories
         // Shared Skill
         Task<bool> SkillExistsAsync(
             int skillId);
-
-        // Job Seeker Skills
+ 
         // Job Seeker skills
         Task<bool> HasSkillAsync(
             int profileId,

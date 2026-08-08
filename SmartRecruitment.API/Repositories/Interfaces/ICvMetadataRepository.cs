@@ -4,8 +4,8 @@ namespace SmartRecruitment.API.Repositories.Interfaces
 {
     public interface ICvMetadataRepository
     {
-        //Task<CvMetadata?> GetByUserIdAsync(
-        //    int userId);
+        Task<CvMetadata?> GetByUserIdAsync(
+           int userId);
 
         Task AddAsync(
             CvMetadata metadata);

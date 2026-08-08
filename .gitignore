@@ -427,3 +427,7 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Job Seeker CV uploads
+SmartRecruitment.API/Storage/CVs/*
+!SmartRecruitment.API/Storage/CVs/.gitkeep

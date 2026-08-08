@@ -1,51 +1,50 @@
-﻿//using SmartRecruitment.API.Helpers;
-//using SmartRecruitment.API.Mappings;
-//using SmartRecruitment.API.Repositories;
-//using SmartRecruitment.API.Repositories.Interfaces;
-//using SmartRecruitment.API.Services;
-//using SmartRecruitment.API.Services.Interfaces;
-//using SmartRecruitment.API.Validators.JobSeeker;
+﻿using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 
-//namespace SmartRecruitment.API.Extensions
-//{
-//    public class JobSeekerServiceExtensions
-//    {
-//        public static IServiceCollection
-//            AddJobSeekerModule(
-//                this IServiceCollection services)
-//        {
-//            services.AddScoped<
-//                IJobSeekerRepository,
-//                JobSeekerRepository>();
+using SmartRecruitment.API.Helpers;
+using SmartRecruitment.API.Mappings;
 
-//            services.AddScoped<
-//                ICvMetadataRepository,
-//                CvMetadataRepository>();
+using SmartRecruitment.API.Repositories;
+using SmartRecruitment.API.Repositories.Interfaces;
 
-//            services.AddScoped<
-//                IJobSeekerService,
-//                JobSeekerService>();
+using SmartRecruitment.API.Services;
+using SmartRecruitment.API.Services.Interfaces;
 
-//            services.AddScoped<
-//                ICvStorageService,
-//                CvStorageService>();
+using SmartRecruitment.API.Validators.JobSeeker;
 
-//            services.AddScoped<
-//                FileValidationHelper>();
+namespace SmartRecruitment.API.Extensions
+{
+    public static class JobSeekerServiceExtensions
+    {
+        public static IServiceCollection AddJobSeekerModule(
+            this IServiceCollection services)
+        {
+            services.AddScoped<
+                IJobSeekerRepository,
+                JobSeekerRepository>();
 
-//            services.AddScoped<
-//                SafeFileNameGenerator>();
+            services.AddScoped<
+                ICvMetadataRepository,
+                CvMetadataRepository>();
+                
+            services.AddScoped<
+                IJobSeekerService,
+                JobSeekerService>();
 
-//            services.AddAutoMapper(
-//                typeof(
-//                    JobSeekerMappingProfile)
-//                    .Assembly);
+            services.AddScoped<
+                ICvStorageService,
+                CvStorageService>();
 
-//            services
-//                .AddValidatorsFromAssemblyContaining<
-//                    UpdateProfileValidator>();
+            services.AddScoped<FileValidationHelper>();
+            services.AddScoped<SafeFileNameGenerator>();
 
-//            return services;
-//        }
-//    }
-//}
+            services.AddAutoMapper(
+                typeof(JobSeekerMappingProfile).Assembly);
+
+            services.AddValidatorsFromAssemblyContaining<
+                UpdateProfileValidator>();
+
+            return services;
+        }
+    }
+}

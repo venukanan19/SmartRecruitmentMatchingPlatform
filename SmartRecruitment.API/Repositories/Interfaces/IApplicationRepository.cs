@@ -1,5 +1,5 @@
 ﻿using SmartRecruitment.API.Models.Entities;
-using static System.Net.Mime.MediaTypeNames;
+
 
 namespace SmartRecruitment.API.Repositories.Interfaces
 {
@@ -11,4 +11,4 @@ namespace SmartRecruitment.API.Repositories.Interfaces
 
         Task SaveChangesAsync();
     }
-}
+} 
