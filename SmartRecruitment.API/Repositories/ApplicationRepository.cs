@@ -92,5 +92,14 @@ namespace SmartRecruitment.API.Repositories
 
             return true;
         }
+        public async Task<List<Application>>
+    GetApplicationsByVacancyIdAsync(
+        int vacancyId)
+        {
+            return await _context.Applications
+                .Include(a => a.JobSeekerProfile)
+                .Where(a => a.VacancyId == vacancyId)
+                .ToListAsync();
+        }
     }
 }

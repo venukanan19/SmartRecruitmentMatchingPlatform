@@ -1,6 +1,7 @@
 ﻿using SmartRecruitment.API.Models.DTOs.Notification;
 using SmartRecruitment.API.Models.Entities;
 using SmartRecruitment.API.Repositories;
+using SmartRecruitment.API.Services.Interfaces;
 
 namespace SmartRecruitment.API.Services
 {

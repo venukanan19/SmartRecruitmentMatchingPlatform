@@ -1,7 +1,8 @@
 ﻿using SmartRecruitment.API.Enums;
 using SmartRecruitment.API.Models.DTOs.ContactRequest;
 using SmartRecruitment.API.Models.Entities;
-using SmartRecruitment.API.Repositories;
+using SmartRecruitment.API.Repositories.Interfaces;
+using SmartRecruitment.API.Services.Interfaces;
 
 namespace SmartRecruitment.API.Services
 {

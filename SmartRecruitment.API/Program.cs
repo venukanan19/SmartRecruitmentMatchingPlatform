@@ -57,6 +57,47 @@ namespace SmartRecruitment.API
 
             // Member 2 - Job Seeker
             builder.Services.AddJobSeekerModule();
+            
+            // Member 4 - Matching & Applications
+            
+
+            builder.Services.AddScoped<
+                IApplicationRepository,
+                ApplicationRepository>();
+
+            builder.Services.AddScoped<
+                IApplicationService,
+                ApplicationService>();
+
+            builder.Services.AddScoped<
+                IMatchingService,
+                MatchingService>();
+
+            builder.Services.AddScoped<
+                RankingService>();
+
+            builder.Services.AddScoped<
+                SkillGapService>();
+
+
+            // Member 5 - Contact Requests
+
+
+            builder.Services.AddScoped<
+               IContactRequestRepository,
+                ContactRequestRepository>();
+
+            builder.Services.AddScoped<
+                IContactRequestService,
+                ContactRequestService>();
+
+            builder.Services.AddScoped<
+                INotificationRepository,
+                NotificationRepository>();
+
+            builder.Services.AddScoped<
+                INotificationService,
+                NotificationService>();
 
             // OpenAPI
             builder.Services.AddOpenApi();

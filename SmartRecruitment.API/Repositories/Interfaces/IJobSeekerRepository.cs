@@ -4,42 +4,52 @@ namespace SmartRecruitment.API.Repositories
 {
     public interface IJobSeekerRepository
     {
+        // =====================================================
         // Profile
+        // =====================================================
+
         Task<JobSeekerProfile?> GetByUserIdAsync(
             int userId);
 
         Task<JobSeekerProfile?> GetCompleteProfileByUserIdAsync(
-          int jobSeekerProfileId);
+            int userId);
 
         Task AddProfileAsync(
             JobSeekerProfile profile);
 
-        // Shared Skill
+        // =====================================================
+        // Skills
+        // =====================================================
+
         Task<bool> SkillExistsAsync(
             int skillId);
- 
-        // Job Seeker skills
+
         Task<bool> HasSkillAsync(
-            int profileId,
+            int jobSeekerProfileId,
             int skillId);
 
         Task AddSkillAsync(
-            JobSeekerSkill jobSeekerSkill);
+            JobSeekerSkill skill);
 
         Task<JobSeekerSkill?> GetSkillRelationAsync(
             int userId,
             int skillId);
 
         void RemoveSkill(
-            JobSeekerSkill jobSeekerSkill);
+            JobSeekerSkill skill);
 
+        // =====================================================
         // Education
-        Task<IReadOnlyList<Education>> GetEducationAsync(
-            int userId);
+        // =====================================================
 
-        Task<Education?> GetEducationByIdAsync(
-            int userId,
-            int educationId);
+        Task<IReadOnlyList<Education>>
+            GetEducationAsync(
+                int userId);
+
+        Task<Education?>
+            GetEducationByIdAsync(
+                int userId,
+                int educationId);
 
         Task AddEducationAsync(
             Education education);
@@ -50,13 +60,18 @@ namespace SmartRecruitment.API.Repositories
         void RemoveEducation(
             Education education);
 
+        // =====================================================
         // Experience
-        Task<IReadOnlyList<Experience>> GetExperiencesAsync(
-            int userId);
+        // =====================================================
 
-        Task<Experience?> GetExperienceByIdAsync(
-            int userId,
-            int experienceId);
+        Task<IReadOnlyList<Experience>>
+            GetExperiencesAsync(
+                int userId);
+
+        Task<Experience?>
+            GetExperienceByIdAsync(
+                int userId,
+                int experienceId);
 
         Task AddExperienceAsync(
             Experience experience);
@@ -67,7 +82,10 @@ namespace SmartRecruitment.API.Repositories
         void RemoveExperience(
             Experience experience);
 
+        // =====================================================
         // Save
+        // =====================================================
+
         Task<bool> SaveChangesAsync();
     }
 }

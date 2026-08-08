@@ -1,6 +1,6 @@
 ﻿using SmartRecruitment.API.Models.DTOs.Notification;
 
-namespace SmartRecruitment.API.Services
+namespace SmartRecruitment.API.Services.Interfaces
 {
     public interface INotificationService
     {
