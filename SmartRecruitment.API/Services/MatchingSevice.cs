@@ -27,13 +27,12 @@ namespace SmartRecruitment.API.Services
             int jobSeekerProfileId,
             int vacancyId)
         {
-            // -------------------------------------------------
-            // 1. Get vacancy with required skills
-            // -------------------------------------------------
+            // -----------------------------------------
+            // Get Vacancy
+            // -----------------------------------------
 
             var vacancy =
-                await _vacancyRepository.GetByIdWithDetailsAsync(
-                    vacancyId);
+                await _vacancyRepository.GetByIdWithDetailsAsync(vacancyId);
 
             if (vacancy == null)
             {
@@ -41,28 +40,13 @@ namespace SmartRecruitment.API.Services
                     $"Vacancy with ID {vacancyId} was not found.");
             }
 
-            // -------------------------------------------------
-            // 2. Get Job Seeker profile
-            // -------------------------------------------------
-
-            var jobSeeker =
-                await _jobSeekerRepository.GetByUserIdAsync(
-                    jobSeekerProfileId);
-
-            if (jobSeeker == null)
-            {
-                throw new KeyNotFoundException(
-                    $"Job seeker with ID {jobSeekerProfileId} was not found.");
-            }
-
-            // -------------------------------------------------
-            // 3. Get complete profile
-            // -------------------------------------------------
+            // -----------------------------------------
+            // Get Complete Job Seeker Profile
+            // -----------------------------------------
 
             var profile =
-    await _jobSeekerRepository
-        .GetCompleteProfileByIdAsync(
-            jobSeekerProfileId);
+                await _jobSeekerRepository
+                    .GetCompleteProfileByIdAsync(jobSeekerProfileId);
 
             if (profile == null)
             {
@@ -70,21 +54,17 @@ namespace SmartRecruitment.API.Services
                     $"Job seeker profile with ID {jobSeekerProfileId} was not found.");
             }
 
-            // -------------------------------------------------
-            // 4. Skill matching
-            // -------------------------------------------------
+            // -----------------------------------------
+            // Skill Matching
+            // -----------------------------------------
 
             var requiredSkills = vacancy.VacancySkills
-                .Select(vs => vs.Skill.Name)
-                .Where(name => !string.IsNullOrWhiteSpace(name))
-                .Select(name => name.Trim().ToLower())
+                .Select(vs => vs.Skill.Name.Trim().ToLower())
                 .Distinct()
                 .ToList();
 
             var candidateSkills = profile.JobSeekerSkills
-                .Select(js => js.Skill.Name)
-                .Where(name => !string.IsNullOrWhiteSpace(name))
-                .Select(name => name.Trim().ToLower())
+                .Select(js => js.Skill.Name.Trim().ToLower())
                 .Distinct()
                 .ToList();
 
@@ -98,17 +78,17 @@ namespace SmartRecruitment.API.Services
 
             double skillScore = 0;
 
-            if (requiredSkills.Count > 0)
+            if (requiredSkills.Any())
             {
                 skillScore =
                     ((double)matchedSkills.Count /
-                    requiredSkills.Count) *
-                    SkillWeight;
+                    requiredSkills.Count)
+                    * SkillWeight;
             }
 
-            // -------------------------------------------------
-            // 5. Experience matching
-            // -------------------------------------------------
+            // -----------------------------------------
+            // Experience Matching
+            // -----------------------------------------
 
             double totalExperienceYears = 0;
 
@@ -124,7 +104,7 @@ namespace SmartRecruitment.API.Services
                 }
             }
 
-            double experienceScore = 0;
+            double experienceScore;
 
             if (vacancy.RequiredExperienceYears <= 0)
             {
@@ -132,26 +112,25 @@ namespace SmartRecruitment.API.Services
             }
             else
             {
-                double experienceRatio =
-                    totalExperienceYears /
-                    vacancy.RequiredExperienceYears;
-
-                experienceRatio =
-                    Math.Min(experienceRatio, 1.0);
+                double ratio =
+                    Math.Min(
+                        totalExperienceYears /
+                        vacancy.RequiredExperienceYears,
+                        1);
 
                 experienceScore =
-                    experienceRatio *
-                    ExperienceWeight;
+                    ratio * ExperienceWeight;
             }
 
-            // -------------------------------------------------
-            // 6. Education matching
-            // -------------------------------------------------
+            // -----------------------------------------
+            // Education Matching
+            // -----------------------------------------
 
             double educationScore = 0;
 
             string requiredEducation =
-                vacancy.EducationRequirement?.Trim() ?? string.Empty;
+                vacancy.EducationRequirement?.Trim()
+                ?? string.Empty;
 
             if (string.IsNullOrWhiteSpace(requiredEducation))
             {
@@ -159,36 +138,30 @@ namespace SmartRecruitment.API.Services
             }
             else
             {
-                bool educationMatched =
-                    profile.Educations.Any(education =>
-                        education.Qualification
-                            .Contains(
-                                requiredEducation,
-                                StringComparison.OrdinalIgnoreCase)
+                bool matched =
+                    profile.Educations.Any(e =>
+                        e.Qualification.Contains(
+                            requiredEducation,
+                            StringComparison.OrdinalIgnoreCase)
                         ||
-                        education.FieldOfStudy
-                            .Contains(
-                                requiredEducation,
-                                StringComparison.OrdinalIgnoreCase));
+                        e.FieldOfStudy.Contains(
+                            requiredEducation,
+                            StringComparison.OrdinalIgnoreCase));
 
-                if (educationMatched)
+                if (matched)
                 {
                     educationScore = EducationWeight;
                 }
             }
 
-            // -------------------------------------------------
-            // 7. Total score
-            // -------------------------------------------------
+            // -----------------------------------------
+            // Final Score
+            // -----------------------------------------
 
             double totalScore =
                 skillScore +
                 experienceScore +
                 educationScore;
-
-            // -------------------------------------------------
-            // 8. Return result
-            // -------------------------------------------------
 
             return new MatchResultDto
             {
@@ -206,8 +179,7 @@ namespace SmartRecruitment.API.Services
             GetRankedCandidatesAsync(int vacancyId)
         {
             var vacancy =
-                await _vacancyRepository.GetByIdWithDetailsAsync(
-                    vacancyId);
+                await _vacancyRepository.GetByIdWithDetailsAsync(vacancyId);
 
             if (vacancy == null)
             {
@@ -215,11 +187,8 @@ namespace SmartRecruitment.API.Services
                     $"Vacancy with ID {vacancyId} was not found.");
             }
 
-            // This method should obtain the applicants for this vacancy
-            // from the Application repository.
-            //
-            // Therefore, ranking cannot be completed correctly with
-            // only IVacancyRepository + IJobSeekerRepository.
+            // Ranking logic will be implemented
+            // after ApplicationRepository integration.
 
             return new List<RankedCandidateDto>();
         }
