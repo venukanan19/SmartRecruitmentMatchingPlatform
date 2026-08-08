@@ -1,6 +1,6 @@
 ﻿using SmartRecruitment.API.Models.Entities;
 
-namespace SmartRecruitment.API.Repositories
+namespace SmartRecruitment.API.Repositories.Interfaces
 {
     public interface IContactRequestRepository
     {

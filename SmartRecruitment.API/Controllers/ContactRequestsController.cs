@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SmartRecruitment.API.Models.DTOs.ContactRequest;
 using SmartRecruitment.API.Repositories.Interfaces;
-using SmartRecruitment.API.Services;
+using SmartRecruitment.API.Services.Interfaces;
 using System.Security.Claims;
 
 namespace SmartRecruitment.API.Controllers

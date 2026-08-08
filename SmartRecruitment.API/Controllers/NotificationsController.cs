@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SmartRecruitment.API.Models.DTOs.Notification;
-using SmartRecruitment.API.Services;
+using SmartRecruitment.API.Services.Interfaces;
 
 namespace SmartRecruitment.API.Controllers
 {

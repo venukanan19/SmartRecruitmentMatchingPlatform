@@ -5,11 +5,11 @@ namespace SmartRecruitment.API.Services.Interfaces
     public interface IMatchingService
     {
         Task<MatchResultDto> CalculateMatchAsync(
-            int jobSeekerProfileId,
+            int userId,
             int vacancyId);
 
-
-        Task<IEnumerable<RankedCandidateDto>> GetRankedCandidatesAsync(
-            int vacancyId);
+        Task<IEnumerable<RankedCandidateDto>>
+            GetRankedCandidatesAsync(
+                int vacancyId);
     }
 }

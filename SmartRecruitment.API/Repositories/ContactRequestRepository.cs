@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SmartRecruitment.API.Data;
 using SmartRecruitment.API.Models.Entities;
+using SmartRecruitment.API.Repositories.Interfaces;
 
 namespace SmartRecruitment.API.Repositories
 {
