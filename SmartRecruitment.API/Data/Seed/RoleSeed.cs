@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SmartRecruitment.API.Enums;
-//using SmartRecruitment.API.Helpers;
+using SmartRecruitment.API.Helpers;
 using SmartRecruitment.API.Models.Entities;
 namespace SmartRecruitment.API.Data.Seed
 {
@@ -40,21 +40,21 @@ namespace SmartRecruitment.API.Data.Seed
                 return;
             }
 
-            //User administrator = new()
-            //{
-            //    FullName = adminFullName.Trim(),
-            //    Email = normalizedEmail,
-            //    PasswordHash =
-            //        PasswordHashHelper.HashPassword(
-            //            adminPassword),
-            //    Role = UserRole.Admin.ToString(),
-            //    IsActive = true,
-            //    CreatedAt = DateTime.UtcNow
-            //};
+            User administrator = new()
+            {
+                FullName = adminFullName.Trim(),
+                Email = normalizedEmail,
+                PasswordHash =
+                    PasswordHashHelper.HashPassword(
+                        adminPassword),
+                Role = UserRole.Admin.ToString(),
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            };
 
-            //await dbContext.Users.AddAsync(
-            //    administrator,
-            //    cancellationToken);
+            await dbContext.Users.AddAsync(
+                administrator,
+                cancellationToken);
 
             await dbContext.SaveChangesAsync(
                 cancellationToken);
