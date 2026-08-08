@@ -14,4 +14,4 @@ namespace SmartRecruitment.API.Repositories.Interfaces
         Task<IEnumerable<Application>> GetByJobSeekerProfileIdAsync(int jobSeekerProfileId);
         Task<bool> UpdateStatusAsync(int applicationId, ApplicationStatus status);
     }
-}
+} 

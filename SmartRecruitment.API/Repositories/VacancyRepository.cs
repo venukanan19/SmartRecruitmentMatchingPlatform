@@ -17,8 +17,8 @@ namespace SmartRecruitment.API.Repositories
         public async Task<Vacancy?> GetByIdAsync(int vacancyId)
         {
             return await _dbContext.Vacancies
-                .FirstOrDefaultAsync(vacancy =>
-                    vacancy.VacancyId == vacancyId);
+                .FirstOrDefaultAsync(
+                    vacancy => vacancy.VacancyId == vacancyId);
         }
 
         public async Task<Vacancy?> GetByIdWithDetailsAsync(
@@ -28,8 +28,8 @@ namespace SmartRecruitment.API.Repositories
                 .Include(vacancy => vacancy.EmployerProfile)
                 .Include(vacancy => vacancy.VacancySkills)
                     .ThenInclude(vacancySkill => vacancySkill.Skill)
-                .FirstOrDefaultAsync(vacancy =>
-                    vacancy.VacancyId == vacancyId);
+                .FirstOrDefaultAsync(
+                    vacancy => vacancy.VacancyId == vacancyId);
         }
 
         public async Task<IReadOnlyList<Vacancy>> GetByEmployerIdAsync(
@@ -39,9 +39,11 @@ namespace SmartRecruitment.API.Repositories
                 .Include(vacancy => vacancy.EmployerProfile)
                 .Include(vacancy => vacancy.VacancySkills)
                     .ThenInclude(vacancySkill => vacancySkill.Skill)
-                .Where(vacancy =>
-                    vacancy.EmployerProfileId == employerProfileId)
-                .OrderByDescending(vacancy => vacancy.CreatedAt)
+                .Where(
+                    vacancy =>
+                        vacancy.EmployerProfileId == employerProfileId)
+                .OrderByDescending(
+                    vacancy => vacancy.CreatedAt)
                 .ToListAsync();
         }
 

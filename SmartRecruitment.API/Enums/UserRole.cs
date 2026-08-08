@@ -1,9 +1,9 @@
 ﻿namespace SmartRecruitment.API.Enums
 {
-    public class UserRole
+    public enum UserRole
     {
-        //Admin = 1,
-        //JobSeeker = 2,
-        //Employer = 3
+        Admin = 1,
+        JobSeeker = 2,
+        Employer = 3
     }
 }
