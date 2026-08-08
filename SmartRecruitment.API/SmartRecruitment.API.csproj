@@ -27,7 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\Seed\" />
     <Folder Include="Helpers\" />
     <Folder Include="Middleware\" />
     <Folder Include="Constants\" />

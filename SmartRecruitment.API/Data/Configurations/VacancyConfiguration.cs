@@ -4,12 +4,22 @@ using SmartRecruitment.API.Models.Entities;
 
 namespace SmartRecruitment.API.Data.Configurations
 {
-    public class VacancyConfiguration : IEntityTypeConfiguration<Vacancy>
+    public class VacancyConfiguration
+        : IEntityTypeConfiguration<Vacancy>
     {
         public void Configure(EntityTypeBuilder<Vacancy> builder)
         {
+            builder.ToTable("Vacancies", tableBuilder =>
+            {
+                tableBuilder.HasCheckConstraint(
+                    "CK_Vacancies_RequiredExperienceYears",
+                    "[RequiredExperienceYears] >= 0");
+            });
+
+            // Primary Key
             builder.HasKey(vacancy => vacancy.VacancyId);
 
+            // Properties
             builder.Property(vacancy => vacancy.Title)
                 .IsRequired()
                 .HasMaxLength(200);
@@ -29,15 +39,16 @@ namespace SmartRecruitment.API.Data.Configurations
                 .IsRequired()
                 .HasMaxLength(300);
 
-            builder.Property(vacancy => vacancy.IsClosed)
-                .HasDefaultValue(false);
+            // Vacancy Status
+            builder.Property(vacancy => vacancy.Status)
+                .HasConversion<int>()
+                .IsRequired();
 
-            builder.ToTable("Vacancies", table =>
-            {
-                table.HasCheckConstraint(
-                    "CK_Vacancies_RequiredExperienceYears",
-                    "[RequiredExperienceYears] >= 0");
-            });
+            // EmployerProfile 1 -> many Vacancies
+            builder.HasOne(vacancy => vacancy.EmployerProfile)
+                .WithMany(employerProfile => employerProfile.Vacancies)
+                .HasForeignKey(vacancy => vacancy.EmployerProfileId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

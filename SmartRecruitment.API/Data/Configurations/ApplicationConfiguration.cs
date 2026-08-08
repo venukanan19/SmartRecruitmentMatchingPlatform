@@ -35,8 +35,8 @@ namespace SmartRecruitment.API.Data.Configurations
                 .HasDatabaseName("IX_Applications_JobSeekerProfileId_VacancyId_Unique");
 
             // Foreign Key Relationships
-            // Uncomment the navigation configuration once Member 2 (JobSeekerProfile) and Member 3 (Vacancy) push their entities.
-            /*
+            
+            
             builder.HasOne(a => a.JobSeekerProfile)
                 .WithMany()
                 .HasForeignKey(a => a.JobSeekerProfileId)
@@ -46,7 +46,7 @@ namespace SmartRecruitment.API.Data.Configurations
                 .WithMany()
                 .HasForeignKey(a => a.VacancyId)
                 .OnDelete(DeleteBehavior.Restrict);
-            */
+            
         }
     }
 }

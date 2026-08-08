@@ -17,20 +17,7 @@ namespace SmartRecruitment.API.Data.Configurations
                 x.JobSeekerProfileId,
                 x.SkillId
             });
-
-            // Optional database-level check constraints
-            builder.ToTable(
-                "JobSeekerSkills",
-                tableBuilder =>
-                {
-                    tableBuilder.HasCheckConstraint(
-                        "CK_JobSeekerSkills_ProficiencyLevel",
-                        "[ProficiencyLevel] BETWEEN 1 AND 5");
-
-                    tableBuilder.HasCheckConstraint(
-                        "CK_JobSeekerSkills_YearsOfExperience",
-                        "[YearsOfExperience] >= 0");
-                });
+ 
 
             // Profile relationship
             builder.HasOne(x => x.JobSeekerProfile)
@@ -40,7 +27,7 @@ namespace SmartRecruitment.API.Data.Configurations
 
             // Shared Skill relationship
             builder.HasOne(x => x.Skill)
-                .WithMany()
+                .WithMany(x => x.JobSeekerSkills)
                 .HasForeignKey(x => x.SkillId)
                 .OnDelete(DeleteBehavior.Restrict);
 
