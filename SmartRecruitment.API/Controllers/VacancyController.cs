@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SmartRecruitment.API.Models.DTOs.Vacancy;
@@ -12,10 +13,20 @@ namespace SmartRecruitment.API.Controllers
     {
         private readonly IVacancyService _vacancyService;
 
+        private readonly IValidator<CreateVacancyRequestDto>
+            _createVacancyValidator;
+
+        private readonly IValidator<UpdateVacancyRequestDto>
+            _updateVacancyValidator;
+
         public VacancyController(
-            IVacancyService vacancyService)
+            IVacancyService vacancyService,
+            IValidator<CreateVacancyRequestDto> createVacancyValidator,
+            IValidator<UpdateVacancyRequestDto> updateVacancyValidator)
         {
             _vacancyService = vacancyService;
+            _createVacancyValidator = createVacancyValidator;
+            _updateVacancyValidator = updateVacancyValidator;
         }
 
         // GET: api/vacancies/{vacancyId}
@@ -71,6 +82,19 @@ namespace SmartRecruitment.API.Controllers
         public async Task<IActionResult> Create(
             [FromBody] CreateVacancyRequestDto request)
         {
+            var validationResult =
+                await _createVacancyValidator.ValidateAsync(request);
+
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(new
+                {
+                    errors = validationResult.Errors
+                        .Select(error => error.ErrorMessage)
+                        .ToList()
+                });
+            }
+
             if (!TryGetUserId(out int userId))
             {
                 return Unauthorized();
@@ -114,6 +138,19 @@ namespace SmartRecruitment.API.Controllers
             int vacancyId,
             [FromBody] UpdateVacancyRequestDto request)
         {
+            var validationResult =
+                await _updateVacancyValidator.ValidateAsync(request);
+
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(new
+                {
+                    errors = validationResult.Errors
+                        .Select(error => error.ErrorMessage)
+                        .ToList()
+                });
+            }
+
             if (!TryGetUserId(out int userId))
             {
                 return Unauthorized();
