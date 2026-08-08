@@ -5,11 +5,13 @@ using SmartRecruitment.API.Repositories.Interfaces;
 
 namespace SmartRecruitment.API.Repositories
 {
-    public class JobSeekerRepository : IJobSeekerRepository
+    public class JobSeekerRepository
+        : IJobSeekerRepository
     {
         private readonly ApplicationDbContext _context;
 
-        public JobSeekerRepository(ApplicationDbContext context)
+        public JobSeekerRepository(
+            ApplicationDbContext context)
         {
             _context = context;
         }
@@ -22,24 +24,28 @@ namespace SmartRecruitment.API.Repositories
             int userId)
         {
             return await _context.JobSeekerProfiles
-                .FirstOrDefaultAsync(profile =>
-                    profile.UserId == userId);
+                .FirstOrDefaultAsync(
+                    profile =>
+                        profile.UserId == userId);
         }
 
         public async Task<JobSeekerProfile?>
-    GetCompleteProfileByIdAsync(
-        int jobSeekerProfileId)
+            GetCompleteProfileByUserIdAsync(
+                int userId)
         {
             return await _context.JobSeekerProfiles
                 .AsNoTracking()
                 .Include(profile => profile.User)
                 .Include(profile => profile.JobSeekerSkills)
-                    .ThenInclude(profileSkill => profileSkill.Skill)
+                    .ThenInclude(
+                        profileSkill =>
+                            profileSkill.Skill)
                 .Include(profile => profile.Educations)
                 .Include(profile => profile.Experiences)
                 .Include(profile => profile.CvMetadata)
-                .FirstOrDefaultAsync(profile =>
-                    profile.JobSeekerProfileId == jobSeekerProfileId);
+                .FirstOrDefaultAsync(
+                    profile =>
+                        profile.UserId == userId);
         }
 
         public async Task AddProfileAsync(
@@ -57,8 +63,9 @@ namespace SmartRecruitment.API.Repositories
             int skillId)
         {
             return await _context.Skills
-                .AnyAsync(skill =>
-                    skill.SkillId == skillId);
+                .AnyAsync(
+                    skill =>
+                        skill.SkillId == skillId);
         }
 
         // =========================================================
@@ -70,9 +77,12 @@ namespace SmartRecruitment.API.Repositories
             int skillId)
         {
             return await _context.JobSeekerSkills
-                .AnyAsync(profileSkill =>
-                    profileSkill.JobSeekerProfileId == profileId &&
-                    profileSkill.SkillId == skillId);
+                .AnyAsync(
+                    profileSkill =>
+                        profileSkill.JobSeekerProfileId ==
+                            profileId &&
+                        profileSkill.SkillId ==
+                            skillId);
         }
 
         public async Task AddSkillAsync(
@@ -88,11 +98,17 @@ namespace SmartRecruitment.API.Repositories
                 int skillId)
         {
             return await _context.JobSeekerSkills
-                .Include(profileSkill => profileSkill.Skill)
-                .Include(profileSkill => profileSkill.JobSeekerProfile)
-                .FirstOrDefaultAsync(profileSkill =>
-                    profileSkill.SkillId == skillId &&
-                    profileSkill.JobSeekerProfile.UserId == userId);
+                .Include(
+                    profileSkill =>
+                        profileSkill.Skill)
+                .Include(
+                    profileSkill =>
+                        profileSkill.JobSeekerProfile)
+                .FirstOrDefaultAsync(
+                    profileSkill =>
+                        profileSkill.SkillId == skillId &&
+                        profileSkill.JobSeekerProfile.UserId ==
+                            userId);
         }
 
         public void UpdateSkill(
@@ -119,10 +135,13 @@ namespace SmartRecruitment.API.Repositories
         {
             return await _context.Educations
                 .AsNoTracking()
-                .Where(education =>
-                    education.JobSeekerProfile.UserId == userId)
-                .OrderByDescending(education =>
-                    education.StartDate)
+                .Where(
+                    education =>
+                        education.JobSeekerProfile.UserId ==
+                            userId)
+                .OrderByDescending(
+                    education =>
+                        education.StartDate)
                 .ToListAsync();
         }
 
@@ -132,11 +151,15 @@ namespace SmartRecruitment.API.Repositories
                 int educationId)
         {
             return await _context.Educations
-                .Include(education =>
-                    education.JobSeekerProfile)
-                .FirstOrDefaultAsync(education =>
-                    education.EducationId == educationId &&
-                    education.JobSeekerProfile.UserId == userId);
+                .Include(
+                    education =>
+                        education.JobSeekerProfile)
+                .FirstOrDefaultAsync(
+                    education =>
+                        education.EducationId ==
+                            educationId &&
+                        education.JobSeekerProfile.UserId ==
+                            userId);
         }
 
         public async Task AddEducationAsync(
@@ -170,10 +193,13 @@ namespace SmartRecruitment.API.Repositories
         {
             return await _context.Experiences
                 .AsNoTracking()
-                .Where(experience =>
-                    experience.JobSeekerProfile.UserId == userId)
-                .OrderByDescending(experience =>
-                    experience.StartDate)
+                .Where(
+                    experience =>
+                        experience.JobSeekerProfile.UserId ==
+                            userId)
+                .OrderByDescending(
+                    experience =>
+                        experience.StartDate)
                 .ToListAsync();
         }
 
@@ -183,11 +209,15 @@ namespace SmartRecruitment.API.Repositories
                 int experienceId)
         {
             return await _context.Experiences
-                .Include(experience =>
-                    experience.JobSeekerProfile)
-                .FirstOrDefaultAsync(experience =>
-                    experience.ExperienceId == experienceId &&
-                    experience.JobSeekerProfile.UserId == userId);
+                .Include(
+                    experience =>
+                        experience.JobSeekerProfile)
+                .FirstOrDefaultAsync(
+                    experience =>
+                        experience.ExperienceId ==
+                            experienceId &&
+                        experience.JobSeekerProfile.UserId ==
+                            userId);
         }
 
         public async Task AddExperienceAsync(

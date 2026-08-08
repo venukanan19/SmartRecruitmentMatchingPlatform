@@ -1,4 +1,4 @@
-using AutoMapper.Execution;
+ 
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using SmartRecruitment.API.Data;
@@ -9,7 +9,6 @@ using SmartRecruitment.API.Repositories.Interfaces;
 using SmartRecruitment.API.Services;
 using SmartRecruitment.API.Services.Interfaces;
 using SmartRecruitment.API.Validators.Employer;
-using System.Net;
 
 namespace SmartRecruitment.API
 {
@@ -56,6 +55,9 @@ namespace SmartRecruitment.API
                 IVacancyService,
                 VacancyService>();
 
+            // Member 2 - Job Seeker
+            builder.Services.AddJobSeekerModule();
+
             // OpenAPI
             builder.Services.AddOpenApi();
 
@@ -73,14 +75,32 @@ namespace SmartRecruitment.API
                     builder.Configuration);
             }
 
-            // Development OpenAPI
+            // Development OpenAPI + Swagger UI
+             
             if (app.Environment.IsDevelopment())
             {
+                // Generates:
+                // /openapi/v1.json
                 app.MapOpenApi();
+
+                // Swagger UI
+                app.UseSwaggerUI(options =>
+                {
+                    options.SwaggerEndpoint(
+                        "/openapi/v1.json",
+                        "Smart Recruitment API v1");
+
+                    options.RoutePrefix = "swagger";
+                });
             }
 
-            //Member 1 - Authentication / Authorization middleware
+ 
+            // Middleware
+    
             app.UseHttpsRedirection();
+
+            // IMPORTANT: Authentication must come first
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
