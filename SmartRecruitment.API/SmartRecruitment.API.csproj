@@ -27,6 +27,8 @@
     </PackageReference>
 
     <PackageReference Include="Microsoft.OpenApi" Version="2.7.5" />
+
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
   </ItemGroup>
 
   <ItemGroup>
@@ -35,7 +37,6 @@
     <Folder Include="Middleware\" />
     <Folder Include="Constants\" />
     <Folder Include="Models\Common\" />
-    <Folder Include="Extensions\" />
     <Folder Include="Storage\CVs\" />
   </ItemGroup>
 
