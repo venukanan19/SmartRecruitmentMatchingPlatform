@@ -8,7 +8,7 @@ namespace SmartRecruitment.API.Repositories
         Task<JobSeekerProfile?> GetByUserIdAsync(
             int userId);
 
-        Task<JobSeekerProfile?> GetCompleteProfileByIdAsync(
+        Task<JobSeekerProfile?> GetCompleteProfileByUserIdAsync(
           int jobSeekerProfileId);
 
         Task AddProfileAsync(
@@ -17,8 +17,8 @@ namespace SmartRecruitment.API.Repositories
         // Shared Skill
         Task<bool> SkillExistsAsync(
             int skillId);
-
-        // Job Seeker Skills
+ 
+        // Job Seeker skills
         Task<bool> HasSkillAsync(
             int profileId,
             int skillId);
@@ -29,9 +29,6 @@ namespace SmartRecruitment.API.Repositories
         Task<JobSeekerSkill?> GetSkillRelationAsync(
             int userId,
             int skillId);
-
-        void UpdateSkill(
-            JobSeekerSkill jobSeekerSkill);
 
         void RemoveSkill(
             JobSeekerSkill jobSeekerSkill);

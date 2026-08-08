@@ -46,7 +46,7 @@ namespace SmartRecruitment.API.Services
 
             var profile =
                 await _jobSeekerRepository
-                    .GetCompleteProfileByIdAsync(jobSeekerProfileId);
+                    .GetCompleteProfileByUserIdAsync(jobSeekerProfileId);
 
             if (profile == null)
             {
