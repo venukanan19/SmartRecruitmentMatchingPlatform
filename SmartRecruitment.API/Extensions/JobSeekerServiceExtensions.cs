@@ -1,15 +1,11 @@
 ﻿using FluentValidation;
-using Microsoft.Extensions.DependencyInjection;
 
-using SmartRecruitment.API.Helpers;
 using SmartRecruitment.API.Mappings;
-
+using SmartRecruitment.API.Helpers;
 using SmartRecruitment.API.Repositories;
 using SmartRecruitment.API.Repositories.Interfaces;
-
-using SmartRecruitment.API.Services;
 using SmartRecruitment.API.Services.Interfaces;
-
+using SmartRecruitment.API.Services;
 using SmartRecruitment.API.Validators.JobSeeker;
 
 namespace SmartRecruitment.API.Extensions
@@ -39,7 +35,8 @@ namespace SmartRecruitment.API.Extensions
             services.AddScoped<SafeFileNameGenerator>();
 
             services.AddAutoMapper(
-                typeof(JobSeekerMappingProfile).Assembly);
+             cfg => { },
+             typeof(JobSeekerMappingProfile));
 
             services.AddValidatorsFromAssemblyContaining<
                 UpdateProfileValidator>();

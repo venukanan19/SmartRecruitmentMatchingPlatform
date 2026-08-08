@@ -5,10 +5,16 @@ namespace SmartRecruitment.API.Helpers
     public class SafeFileNameGenerator
     {
         public string Generate(
+            int jobSeekerProfileId,
             string originalFileName)
         {
-            if (string.IsNullOrWhiteSpace(
-                originalFileName))
+            if (jobSeekerProfileId <= 0)
+            {
+                throw new ArgumentException(
+                    "A valid filename is required.",
+                    nameof(originalFileName));
+            }
+            if (string.IsNullOrWhiteSpace(originalFileName))
             {
                 throw new ArgumentException(
                     "A valid filename is required.",
