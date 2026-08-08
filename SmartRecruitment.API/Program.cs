@@ -1,6 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using SmartRecruitment.API.Data;
 using SmartRecruitment.API.Data.Seed;
+using SmartRecruitment.API.Repositories;
+using SmartRecruitment.API.Repositories.Interfaces;
+using SmartRecruitment.API.Services;
+using SmartRecruitment.API.Services.Interfaces;
 
 namespace SmartRecruitment.API
 {
@@ -17,6 +21,24 @@ namespace SmartRecruitment.API
                 options.UseSqlServer(
                     builder.Configuration.GetConnectionString(
                         "DefaultConnection")));
+
+            // Member 3 Repository registrations
+            builder.Services.AddScoped<
+                IEmployerRepository,
+                EmployerRepository>();
+
+            builder.Services.AddScoped<
+                IVacancyRepository,
+                VacancyRepository>();
+
+            // Member 3 Service registrations
+            builder.Services.AddScoped<
+                IEmployerService,
+                EmployerService>();
+
+            builder.Services.AddScoped<
+                IVacancyService,
+                VacancyService>();
 
             builder.Services.AddOpenApi();
 
