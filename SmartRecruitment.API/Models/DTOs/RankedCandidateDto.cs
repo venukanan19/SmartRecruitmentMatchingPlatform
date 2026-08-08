@@ -6,7 +6,10 @@
 
         public int JobSeekerProfileId { get; set; }
 
-        public string CandidateName { get; set; } = string.Empty;
+
+        public string CandidateName { get; set; }
+            = string.Empty;
+
 
         public double TotalScore { get; set; }
     }
