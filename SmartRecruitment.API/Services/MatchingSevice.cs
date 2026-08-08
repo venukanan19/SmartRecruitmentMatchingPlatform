@@ -1,4 +1,5 @@
 ﻿using SmartRecruitment.API.Models.DTOs;
+using SmartRecruitment.API.Repositories;
 using SmartRecruitment.API.Repositories.Interfaces;
 using SmartRecruitment.API.Services.Interfaces;
 
@@ -7,79 +8,189 @@ namespace SmartRecruitment.API.Services
     public class MatchingService : IMatchingService
     {
         private readonly IVacancyRepository _vacancyRepository;
+        private readonly IJobSeekerRepository _jobSeekerRepository;
 
-        public MatchingService(IVacancyRepository vacancyRepository)
+        // Approved matching weights
+        private const double SkillWeight = 50.0;
+        private const double ExperienceWeight = 30.0;
+        private const double EducationWeight = 20.0;
+
+        public MatchingService(
+            IVacancyRepository vacancyRepository,
+            IJobSeekerRepository jobSeekerRepository)
         {
             _vacancyRepository = vacancyRepository;
+            _jobSeekerRepository = jobSeekerRepository;
         }
 
-        public async Task<MatchResultDto> GetMatchScoreAsync(
-            int vacancyId,
-            int jobSeekerId)
-        {
-            // Step 1: Read Vacancy
-            var vacancy = await _vacancyRepository.GetByIdAsync(vacancyId);
-
-
-            if (vacancy is null)
-            {
-                throw new KeyNotFoundException($"Vacancy with ID {vacancyId} not found.");
-            }
-
-            // TODO:
-            // Read JobSeekerProfile
-            // Read JobSeekerSkills
-            // Read VacancySkills
-
-            // TODO:
-            // Compare Skills
-
-            // TODO:
-            // Compare Experience
-            // vacancy.RequiredExperienceYears
-
-            // TODO:
-            // Compare Education
-            // vacancy.EducationRequirement
-
-            // TODO:
-            // Compare Location
-            // vacancy.Location
-
-            // TODO:
-            // Calculate Total Score
-
-            // TODO:
-            // Find Missing Skills
-
-            throw new NotImplementedException();
-        }
-
-        public async Task<List<RankedCandidateDto>> GetRankedCandidatesAsync(
+        public async Task<MatchResultDto> CalculateMatchAsync(
+            int jobSeekerProfileId,
             int vacancyId)
         {
-            // Step 1: Read Vacancy
-            var vacancy = await _vacancyRepository.GetByIdAsync(vacancyId);
+            // -----------------------------------------
+            // Get Vacancy
+            // -----------------------------------------
 
-            if (vacancy is null)
+            var vacancy =
+                await _vacancyRepository.GetByIdWithDetailsAsync(vacancyId);
+
+            if (vacancy == null)
             {
-                throw new KeyNotFoundException($"Vacancy with ID {vacancyId} not found.");
+                throw new KeyNotFoundException(
+                    $"Vacancy with ID {vacancyId} was not found.");
             }
 
-            // TODO:
-            // Get all applicants
+            // -----------------------------------------
+            // Get Complete Job Seeker Profile
+            // -----------------------------------------
 
-            // TODO:
-            // Calculate Match Score for each applicant
+            var profile =
+                await _jobSeekerRepository
+                    .GetCompleteProfileByIdAsync(jobSeekerProfileId);
 
-            // TODO:
-            // Sort by TotalScore (Highest First)
+            if (profile == null)
+            {
+                throw new KeyNotFoundException(
+                    $"Job seeker profile with ID {jobSeekerProfileId} was not found.");
+            }
 
-            // TODO:
-            // Assign Rank
+            // -----------------------------------------
+            // Skill Matching
+            // -----------------------------------------
 
-            throw new NotImplementedException();
+            var requiredSkills = vacancy.VacancySkills
+                .Select(vs => vs.Skill.Name.Trim().ToLower())
+                .Distinct()
+                .ToList();
+
+            var candidateSkills = profile.JobSeekerSkills
+                .Select(js => js.Skill.Name.Trim().ToLower())
+                .Distinct()
+                .ToList();
+
+            var matchedSkills = requiredSkills
+                .Intersect(candidateSkills)
+                .ToList();
+
+            var missingSkills = requiredSkills
+                .Except(candidateSkills)
+                .ToList();
+
+            double skillScore = 0;
+
+            if (requiredSkills.Any())
+            {
+                skillScore =
+                    ((double)matchedSkills.Count /
+                    requiredSkills.Count)
+                    * SkillWeight;
+            }
+
+            // -----------------------------------------
+            // Experience Matching
+            // -----------------------------------------
+
+            double totalExperienceYears = 0;
+
+            foreach (var experience in profile.Experiences)
+            {
+                DateTime endDate =
+                    experience.EndDate ?? DateTime.UtcNow;
+
+                if (endDate > experience.StartDate)
+                {
+                    totalExperienceYears +=
+                        (endDate - experience.StartDate).TotalDays / 365.25;
+                }
+            }
+
+            double experienceScore;
+
+            if (vacancy.RequiredExperienceYears <= 0)
+            {
+                experienceScore = ExperienceWeight;
+            }
+            else
+            {
+                double ratio =
+                    Math.Min(
+                        totalExperienceYears /
+                        vacancy.RequiredExperienceYears,
+                        1);
+
+                experienceScore =
+                    ratio * ExperienceWeight;
+            }
+
+            // -----------------------------------------
+            // Education Matching
+            // -----------------------------------------
+
+            double educationScore = 0;
+
+            string requiredEducation =
+                vacancy.EducationRequirement?.Trim()
+                ?? string.Empty;
+
+            if (string.IsNullOrWhiteSpace(requiredEducation))
+            {
+                educationScore = EducationWeight;
+            }
+            else
+            {
+                bool matched =
+                    profile.Educations.Any(e =>
+                        e.Qualification.Contains(
+                            requiredEducation,
+                            StringComparison.OrdinalIgnoreCase)
+                        ||
+                        e.FieldOfStudy.Contains(
+                            requiredEducation,
+                            StringComparison.OrdinalIgnoreCase));
+
+                if (matched)
+                {
+                    educationScore = EducationWeight;
+                }
+            }
+
+            // -----------------------------------------
+            // Final Score
+            // -----------------------------------------
+
+            double totalScore =
+                skillScore +
+                experienceScore +
+                educationScore;
+
+            return new MatchResultDto
+            {
+                JobSeekerProfileId = jobSeekerProfileId,
+                VacancyId = vacancyId,
+                SkillScore = Math.Round(skillScore, 2),
+                ExperienceScore = Math.Round(experienceScore, 2),
+                EducationScore = Math.Round(educationScore, 2),
+                TotalScore = Math.Round(totalScore, 2),
+                MissingSkills = missingSkills
+            };
+        }
+
+        public async Task<IEnumerable<RankedCandidateDto>>
+            GetRankedCandidatesAsync(int vacancyId)
+        {
+            var vacancy =
+                await _vacancyRepository.GetByIdWithDetailsAsync(vacancyId);
+
+            if (vacancy == null)
+            {
+                throw new KeyNotFoundException(
+                    $"Vacancy with ID {vacancyId} was not found.");
+            }
+
+            // Ranking logic will be implemented
+            // after ApplicationRepository integration.
+
+            return new List<RankedCandidateDto>();
         }
     }
 }
-
