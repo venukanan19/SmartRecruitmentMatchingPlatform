@@ -1,12 +1,15 @@
+using AutoMapper.Execution;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using SmartRecruitment.API.Data;
 using SmartRecruitment.API.Data.Seed;
+using SmartRecruitment.API.Extensions;
 using SmartRecruitment.API.Repositories;
 using SmartRecruitment.API.Repositories.Interfaces;
 using SmartRecruitment.API.Services;
 using SmartRecruitment.API.Services.Interfaces;
 using SmartRecruitment.API.Validators.Employer;
+using System.Net;
 
 namespace SmartRecruitment.API
 {
@@ -29,6 +32,11 @@ namespace SmartRecruitment.API
             // Registers all validators in this assembly
             builder.Services.AddValidatorsFromAssemblyContaining<
                 CreateEmployerProfileValidator>();
+
+            // Member 1 - Authentication and Administration
+            builder.Services.AddAuthenticationModule(
+               builder.Configuration);
+
 
             // Member 3 Repository registrations
             builder.Services.AddScoped<
@@ -53,14 +61,16 @@ namespace SmartRecruitment.API
 
             var app = builder.Build();
 
-            // Seed approved master skills
+            // Member 1 - Seed initial administrator
             using (var scope = app.Services.CreateScope())
             {
                 var dbContext =
                     scope.ServiceProvider
                         .GetRequiredService<ApplicationDbContext>();
 
-                await SkillSeed.SeedAsync(dbContext);
+                await RoleSeed.SeedAsync(
+                    dbContext,
+                    builder.Configuration);
             }
 
             // Development OpenAPI
@@ -69,6 +79,7 @@ namespace SmartRecruitment.API
                 app.MapOpenApi();
             }
 
+            //Member 1 - Authentication / Authorization middleware
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
