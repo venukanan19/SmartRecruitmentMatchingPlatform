@@ -79,17 +79,21 @@ namespace SmartRecruitment.API
             builder.Services.AddScoped<
                 SkillGapService>();
 
-           
+
             // Member 5 - Contact Requests
-          
+
 
             builder.Services.AddScoped<
-                IContactRequestRepository,
+               IContactRequestRepository,
                 ContactRequestRepository>();
 
             builder.Services.AddScoped<
                 IContactRequestService,
                 ContactRequestService>();
+
+            builder.Services.AddScoped<
+                INotificationRepository,
+                NotificationRepository>();
 
             builder.Services.AddScoped<
                 INotificationService,
