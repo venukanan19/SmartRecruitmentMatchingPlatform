@@ -12,7 +12,8 @@ namespace SmartRecruitment.API.Data
         }
 
         // Member 1 / Shared
-        public DbSet<User> Users { get; set; }
+        public DbSet<User> Users
+            => Set<User>();
 
         public DbSet<Notification> Notifications { get; set; }
 
