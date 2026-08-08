@@ -1,28 +1,110 @@
-﻿using SmartRecruitment.API.Models.DTOs;
+﻿using SmartRecruitment.API.Enums;
+using SmartRecruitment.API.Models.DTOs;
+using SmartRecruitment.API.Models.Entities;
+using SmartRecruitment.API.Repositories.Interfaces;
 using SmartRecruitment.API.Services.Interfaces;
 
 namespace SmartRecruitment.API.Services
 {
-    public class ApplicationService : IApplicationService
+    public class ApplicationService
+        : IApplicationService
     {
-        public async Task<bool> ApplyJobAsync(ApplyJobRequestDto request)
+        private readonly IApplicationRepository
+            _applicationRepository;
+
+        private readonly IVacancyRepository
+            _vacancyRepository;
+
+        public ApplicationService(
+            IApplicationRepository applicationRepository,
+            IVacancyRepository vacancyRepository)
         {
-            // TODO:
-            // Duplicate Check
+            _applicationRepository =
+                applicationRepository;
 
-            // TODO:
-            // Save Application
-
-            throw new NotImplementedException();
+            _vacancyRepository =
+                vacancyRepository;
         }
 
-        public async Task<bool> HasAlreadyAppliedAsync(
-            int jobSeekerId,
-            int vacancyId)
+        public async Task<Application> ApplyAsync(
+            int jobSeekerProfileId,
+            ApplyJobRequestDto request)
         {
-            // TODO:
+            var vacancy =
+                await _vacancyRepository
+                    .GetByIdAsync(request.VacancyId);
 
-            throw new NotImplementedException();
+            if (vacancy == null)
+            {
+                throw new KeyNotFoundException(
+                    "Vacancy not found.");
+            }
+
+            if (vacancy.Status != VacancyStatus.Open)
+            {
+                throw new InvalidOperationException(
+                    "This vacancy is not open.");
+            }
+
+            var alreadyApplied =
+                await _applicationRepository.ExistsAsync(
+                    jobSeekerProfileId,
+                    request.VacancyId);
+
+            if (alreadyApplied)
+            {
+                throw new InvalidOperationException(
+                    "You have already applied for this vacancy.");
+            }
+
+            var application = new Application
+            {
+                JobSeekerProfileId =
+                    jobSeekerProfileId,
+
+                VacancyId =
+                    request.VacancyId,
+
+                CoverLetter =
+                    request.CoverLetter,
+
+                Status =
+                    ApplicationStatus.Applied,
+
+                AppliedDate =
+                    DateTime.UtcNow
+            };
+
+            return await _applicationRepository
+                .CreateAsync(application);
+        }
+
+        public async Task<IEnumerable<Application>>
+            GetJobSeekerApplicationsAsync(
+                int jobSeekerProfileId)
+        {
+            return await _applicationRepository
+                .GetByJobSeekerProfileIdAsync(
+                    jobSeekerProfileId);
+        }
+
+        public async Task<IEnumerable<Application>>
+            GetVacancyApplicationsAsync(
+                int vacancyId)
+        {
+            return await _applicationRepository
+                .GetByVacancyIdAsync(vacancyId);
+        }
+
+        public async Task<bool>
+            UpdateApplicationStatusAsync(
+                int applicationId,
+                ApplicationStatus status)
+        {
+            return await _applicationRepository
+                .UpdateStatusAsync(
+                    applicationId,
+                    status);
         }
     }
 }
