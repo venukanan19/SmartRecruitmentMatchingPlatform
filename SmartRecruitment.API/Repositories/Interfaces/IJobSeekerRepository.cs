@@ -8,7 +8,7 @@ namespace SmartRecruitment.API.Repositories
         Task<JobSeekerProfile?> GetByUserIdAsync(
             int userId);
 
-        Task<JobSeekerProfile?> GetCompleteProfileByIdAsync(
+        Task<JobSeekerProfile?> GetCompleteProfileByUserIdAsync(
           int jobSeekerProfileId);
 
         Task AddProfileAsync(
